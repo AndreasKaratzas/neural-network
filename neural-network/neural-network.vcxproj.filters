@@ -15,28 +15,19 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Parser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Driver.cpp">
+    <ClCompile Include="Accuracy.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Activation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Loss.cpp">
+    <ClCompile Include="Dataset.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Neural.cpp">
+    <ClCompile Include="Driver.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Interface.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Utility.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Preprocess.cpp">
+    <ClCompile Include="Export.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Fit.cpp">
@@ -45,63 +36,42 @@
     <ClCompile Include="Forward.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Interface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Loss.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="Optimize.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Progressbar.cpp">
+    <ClCompile Include="Parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Accuracy.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Export.cpp">
+    <ClCompile Include="Utilities.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Parser.h">
+    <ClInclude Include="Activation.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Common.h">
+    <ClInclude Include="Common.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Driver.h">
+    <ClInclude Include="Dataset.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Activation.h">
+    <ClInclude Include="Driver.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Loss.h">
+    <ClInclude Include="Interface.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Neural.h">
+    <ClInclude Include="Neural.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Interface.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Utility.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Preprocess.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Fit.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Forward.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Optimize.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Progressbar.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Accuracy.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Export.h">
+    <ClInclude Include="Parser.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

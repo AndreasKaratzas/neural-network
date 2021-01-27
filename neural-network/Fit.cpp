@@ -1,93 +1,76 @@
 
-#include "Fit.h"
+#include "Neural.hpp"
+#include "Interface.hpp"
 
 /**
  * Trains the given model. The model is a simple multi-
  * layer feed forward perceptron.
- * 
- * @param[in] fcn the `Fully Connected Network`
- * @param[in] x_train the input matrix used during training. Each row is an input vector for the neural network
- * @param[in] y_train the matrix with the corresponding expected output
- * @param[in, out] train_accuracy the vector with the model's accuracy throughout the different epochs
- * @param[in] train_dim the size of the training dataset. This is the number of rows of the `x_train` matrix
+ *
+ * @param[in] TRAIN the training dataset
  */
-void train(MLP* fcn, long double** (&x_train), long double** y_train, long double* (&train_loss), int* (&train_accuracy), int* (&train_dim))
+void nn::fit(dataset(&TRAIN))
 {
-    int epoch, sample_count, sample_idx;
+    int shuffled_idx;
     double start, end;
-    long double **Z, **A, **delta;                                                          /// `Z[]` corresponds to `DL[]` and `A[]` to `OL[]`
+    std::array<double, EPOCHS> loss;
+    std::array<int, EPOCHS> validity;
 
-    train_loss = (long double*)malloc(EPOCHS * sizeof(long double));                        /// Allocates memory for the container of the model's training loss
-    train_accuracy = (int*)malloc(EPOCHS * sizeof(int));                                    /// Allocates memory for the container of the model's training accuracy 
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dist(0, TRAIN.samples - 1);
 
-    assert(train_loss);                                                                     /// Masks memory fault
-    assert(train_accuracy);                                                                 /// Masks memory fault
+    x += 4;                                                                                 /// Change row for cursor
+                                                                                            /// Change this depending on the ammount of loaded datasets
+    progress_bar progress{ "Training Neural Network ", char(219), CLI_WINDOW_WIDTH };
 
-    allocate_Z(Z, fcn, x_train[0]);                                                         /// Allocates memory and initializes the `Z` contatiner
-    allocate_A(A, fcn, x_train[0]);                                                         /// Allocates memory and initializes the `A` contatiner
-    allocate_delta(delta, fcn);
-
-    for (epoch = 0; epoch < EPOCHS; epoch += 1)                                             /// Trains model
+    for (int epoch = 0; epoch < EPOCHS; epoch += 1)                                         /// Trains model
     {
-        train_accuracy[epoch] = 0;                                                          /// Initializes epoch's training accuracy 
-        train_loss[epoch] = 0.0;                                                            /// Initializes epoch's training loss
+        loss[epoch] = 0.0;                                                                  /// Initializes epoch's training loss
+        validity[epoch] = 0;                                                                /// Initializes epoch's training accuracy
+
+        progress.indicate_progress((epoch + 1.0) / (EPOCHS + 0.0), x, 0);
 
         start = omp_get_wtime();                                                            /// Benchmarks epoch
-        for (sample_count = 0; sample_count < train_dim[0]; sample_count += 1)              /// Iterates through all examples of the training dataset
+        for (int sample = 0; sample < TRAIN.samples; sample += 1)                           /// Iterates through all examples of the training dataset
         {
-            sample_idx = rand() % (int)MNIST_TRAIN;                                         /// Selects a random example
-            zero_grad(delta, fcn, Z, A, x_train[sample_idx]);                               /// Resets the neurons of the neural network
-            feedforward(fcn, Z, A);                                                         /// Feeds forward the selected input
-            backprop(fcn, y_train[sample_idx], A, delta);                                   /// Computes the error for every neuron in the network
-            optimize(fcn, delta, A);                                                        /// Optimizes weights using pack propagation
-            train_accuracy[epoch] += model_accuracy(A[fcn->num_layers - 1], y_train[sample_idx], fcn->sizes[fcn->num_layers - 1]);
-                                                                                            /// Updates epoch's accuracy of the model
-            train_loss[epoch] += mse_loss(A[fcn->num_layers - 1], y_train[sample_idx], fcn->sizes[fcn->num_layers - 1]);
-                                                                                            /// Updates epoch's accuracy of the model
+            shuffled_idx = dist(gen);                                                       /// Selects a random example
+            zero_grad(TRAIN.X[shuffled_idx]);                                               /// Resets the neurons of the neural network
+            forward();                                                                      /// Feeds forward the selected input
+            back_propagation(TRAIN.Y[shuffled_idx]);                                        /// Computes the error for every neuron in the network
+            optimize();                                                                     /// Optimizes weights using pack propagation
+
+            loss[epoch] += mse_loss(TRAIN.Y[shuffled_idx], TRAIN.classes);                  /// Updates epoch's loss of the model
+            validity[epoch] += accuracy(TRAIN.Y[shuffled_idx], TRAIN.classes);              /// Updates epoch's accuracy of the model
         }
         end = omp_get_wtime();                                                              /// Terminates epoch's benchmark
-        print_epoch_stats(epoch, (train_loss[epoch] / MNIST_TRAIN), train_accuracy[epoch], end - start);
-                                                                                            /// Prints epoch's loss, accuracy and benchmark
-    }
 
-    deallocate_Z(Z, fcn);                                                                   /// Deallocates `Z` off memory
-    deallocate_A(A, fcn);                                                                   /// Deallocates `A` off memory
-    deallocate_delta(delta, fcn);                                                           /// Deallocates `delta` off memory
+        loss[epoch] /= (TRAIN.samples + 0.0);                                               /// Averages epoch's loss of the model
+        print_epoch_stats(epoch + 1, loss[epoch], validity[epoch], end - start, x + 2 + epoch + (epoch == 0 ? (-1) : 0), 0);
+        /// Prints epoch's loss, accuracy and benchmark
+    }
 }
 
 /**
- * Evaluates the given model. 
- * 
- * @param[in] fcn the `Fully Connected Network`
- * @param[in] x_test the input matrix used during evaluation. Each row is an input vector for the neural network
- * @param[in] y_test the matrix with the corresponding expected output
- * @param[in] test_dim the size of the evaluation dataset. This is the number of rows of the `x_test` matrix
+ * Evaluates the given model.
+ *
+ * @param[in] TEST the evaluation dataset
  */
-long double test(MLP* fcn, long double** (&x_test), long double** (&y_test), int* (&test_dim))
-{
-    int sample, test_accuracy = 0;
-    double start, end;
-    long double **Z, **A, test_loss = 0.0;
 
-    allocate_Z(Z, fcn, x_test[0]);                                                          /// Allocates memory and initializes the `Z` contatiner
-    allocate_A(A, fcn, x_test[0]);                                                          /// Allocates memory and initializes the `A` contatiner
+void nn::evaluate(dataset(&TEST))
+{
+    int validity = 0;
+    double start, end, loss = 0.0;
 
     start = omp_get_wtime();                                                                /// Benchmarks model's evaluation
-    for (sample = 0; sample < test_dim[0]; sample += 1)                                     /// Iterates through all examples of the evaluation dataset
+    for (int sample = 0; sample < TEST.samples; sample += 1)                                /// Iterates through all examples of the evaluation dataset
     {
-        zero_grad(fcn, Z, A, x_test[sample]);                                               /// Resets the neurons of the neural network
-        feedforward(fcn, Z, A);                                                             /// Feeds forward the evaluation sample
-        test_accuracy += model_accuracy(A[fcn->num_layers - 1], y_test[sample], fcn->sizes[fcn->num_layers - 1]);
-                                                                                            /// Updates accuracy of the model based on the evaluation set
-        test_loss += mse_loss(A[fcn->num_layers - 1], y_test[sample], fcn->sizes[fcn->num_layers - 1]);
-                                                                                            /// Updates loss of the model based on the evaluation set
+        zero_grad(TEST.X[sample]);                                                          /// Resets the neurons of the neural network
+        forward();                                                                          /// Feeds forward the evaluation sample
+        loss += mse_loss(TEST.Y[sample], TEST.classes);                                     /// Updates loss of the model based on the evaluation set
+        validity += accuracy(TEST.Y[sample], TEST.classes);                                 /// Updates accuracy of the model based on the evaluation set
     }
     end = omp_get_wtime();                                                                  /// Terminates model's evaluation benchmark
 
-    print_epoch_stats(-1, test_loss / MNIST_TEST, test_accuracy, end - start);              /// Prints evaluation loss, accuracy, and benchmark
-
-    deallocate_Z(Z, fcn);                                                                   /// Deallocates `Z` off memory
-    deallocate_A(A, fcn);                                                                   /// Deallocates `A` off memory
-
-    return test_loss;
+    loss /= (TEST.samples + 0.0);
+    print_epoch_stats(-1, loss, validity, end - start, x + 2 + EPOCHS, 0);                  /// Prints evaluation loss, accuracy, and benchmark
 }

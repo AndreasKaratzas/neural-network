@@ -1,221 +1,197 @@
 
-#include "Interface.h"
+#include "Interface.hpp"
 
-/**
- * Prints information regarding the usage and the available options of the project.
- * 
- * @param[in] filename the filepath of the executable
- * 
- * @note Upon this function's execution, the program is terminated.
- */
-void usage(char* filename)
+#ifdef _WIN32
+
+#ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
+#define ENABLE_VIRTUAL_TERMINAL_PROCESSING 0x0004
+#endif
+
+static HANDLE stdoutHandle, stdinHandle;
+static DWORD outModeInit, inModeInit;
+
+void setupConsole(void)
 {
-    printf("Usage of %s:\n", filename);
-    printf("\t:option \'-i\': integer \t - \t The size of the input layer for the neural network.\n");
-    printf("\t:option \'-h\': integer \t - \t The size of a hidden layer for the neural network.\n\t\t\t\t\t There can be multiple hidden layers. For every hidden layer, use this option.\n");
-    printf("\t:option \'-o\': integer \t - \t The size of the output layer for the neural network.\n");
-    printf("\t:option \'-a\': string \t - \t The activation function for the neural network.\n\t\t\t\t\t Possible option(s): \"relu\" and \"sigmoid\".\n");
-    exit(8);
+    DWORD outMode = 0, inMode = 0;
+    stdoutHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    stdinHandle = GetStdHandle(STD_INPUT_HANDLE);
+
+    if (stdoutHandle == INVALID_HANDLE_VALUE || stdinHandle == INVALID_HANDLE_VALUE)
+    {
+        exit(GetLastError());
+    }
+
+    if (!GetConsoleMode(stdoutHandle, &outMode) || !GetConsoleMode(stdinHandle, &inMode))
+    {
+        exit(GetLastError());
+    }
+
+    outModeInit = outMode;
+    inModeInit = inMode;
+
+    // Enable ANSI escape codes
+    outMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
+
+    // Set stdin as no echo and unbuffered
+    inMode &= ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);
+
+    if (!SetConsoleMode(stdoutHandle, outMode) || !SetConsoleMode(stdinHandle, inMode))
+    {
+        exit(GetLastError());
+    }
+}
+
+void restoreConsole(void)
+{
+    // Reset colors
+    printf("\x1b[0m");
+
+    // Reset console mode
+    if (!SetConsoleMode(stdoutHandle, outModeInit) || !SetConsoleMode(stdinHandle, inModeInit))
+    {
+        exit(GetLastError());
+    }
+}
+#else
+
+static struct termios orig_term;
+static struct termios new_term;
+
+void setupConsole(void)
+{
+    tcgetattr(STDIN_FILENO, &orig_term);
+    new_term = orig_term;
+
+    new_term.c_lflag &= ~(ICANON | ECHO);
+
+    tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
+}
+
+void restoreConsole(void)
+{
+    // Reset colors
+    printf("\x1b[0m");
+
+    // Reset console mode
+    tcsetattr(STDIN_FILENO, TCSANOW, &orig_term);
+}
+#endif
+
+void getCursorPosition(int* row, int* col)
+{
+    printf("\x1b[6n");
+    char buff[128];
+    int indx = 0;
+    for (;;)
+    {
+        int cc = getchar();
+        buff[indx] = (char)cc;
+        indx++;
+        if (cc == 'R')
+        {
+            buff[indx + 1] = '\0';
+            break;
+        }
+    }
+    sscanf(buff, "\x1b[%d;%dR", row, col);
+    fseek(stdin, 0, SEEK_END);
+}
+
+void clearScreen(void)
+{
+    printf("\033[2J");
+}
+
+void gotoxy(int x, int y)
+{
+    printf("\x1b[%d;%df", x, y);
+}
+
+void hideCursor(void)
+{
+    printf("\x1b[?25l");
+}
+
+void showCursor(void)
+{
+    printf("\x1b[?25h");
+}
+
+void saveCursorPosition(void)
+{
+    printf("\x1b%d", 7);
+}
+
+void restoreCursorPosition(void)
+{
+    printf("\x1b%d", 8);
 }
 
 /**
- * Prints the contents of a matrix. More specifically, it prints the contents
- * of a 2D long double precision floating point dynamic array.
- * 
- * @param[in] container the 2D long double precision floating point dynamic array
- * @param[in] num_layers the number of rows of the matrix
- * @param[in] sizes the column dictionary for each row
- * @param[in] container_typename a symbolic variable name for the printed container
- */
-void print_2D_DOUBLE_vector(long double** container, int num_layers, int* sizes, char* container_typename)
-{
-    int i, j, level = 0;
-
-    printf("For \"%s\":\n", container_typename);
-    for (i = 0; i < num_layers; i += 1)
-    {
-        printf("\tLevel %d\n\t\t", level++);
-        for (j = 0; j < sizes[i]; j += 1)
-        {
-            printf("%Lf ", container[i][j]);
-            if (j % CLI_WINDOW_WIDTH == 0 && j != 0)                        /// Uses the window length defined in `Common.h`
-            {
-                printf("\n\t");
-            }
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-/**
- * Prints the `delta` variable used during back propagation.
- * 
- * @param[in] delta the 2D long double precision floating point dynamic array
- * @param[in] num_layers the number of rows of the matrix
- * @param[in] sizes the column dictionary for each row
- * @param[in] container_typename a symbolic variable name for the printed container
- */
-void print_delta(long double** delta, int num_layers, int* sizes, char* container_typename)
-{
-    int i, j, level = 0;
-
-    printf("For \"%s\":\n", container_typename);
-    for (i = 0; i < num_layers - 1; i += 1)
-    {
-        printf("\tLevel %d\n\t\t", level++);
-        for (j = 0; j < sizes[i + 1]; j += 1)
-        {
-            printf("%Lf ", delta[i][j]);
-            if (j % CLI_WINDOW_WIDTH == 0 && j != 0)
-            {
-                printf("\n\t");
-            }
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-/**
- * Prints the contents of a tensor. More specifically, it prints the contents
- * of a 3D long double precision floating point dynamic array.
- * 
- * @param[in] container the 3D long double precision floating point dynamic array
- * @param[in] num_layers the number of rows of the tensor
- * @param[in] sizes the column dictionary for each row
- * @param[in] container_typename a symbolic variable name for the printed container
- */
-void print_3D_DOUBLE_vector(long double*** container, int num_layers, int* sizes, char* container_typename)
-{
-    int i, j, k, level = 0, sub_level;
-
-    for (i = 0; i < num_layers - 2; i += 1)
-    {
-        sub_level = 0;
-        printf("\tLevel %d\n", level++);
-        for (j = 0; j < sizes[i + 1] - 1; j += 1)
-        {
-            printf("\t\tSub-Level %d\n\t\t\t", sub_level++);
-            for (k = 0; k < sizes[i]; k += 1)
-            {
-                printf("%Lf ", container[i][j][k]);
-                if (k % CLI_WINDOW_WIDTH == 0 && k != 0)
-                {
-                    printf("\n\t");
-                }
-            }
-            printf("\n");
-        }
-        printf("\n");
-    }
-
-    sub_level = 0;
-
-    printf("\tLevel %d\n", level++);
-    for (j = 0; j < sizes[num_layers - 1]; j += 1)
-    {
-        printf("\t\tSub-Level %d\n\t\t\t", sub_level++);
-        for (k = 0; k < sizes[num_layers - 2]; k += 1)
-        {
-            printf("%Lf ", container[i][j][k]);
-            if (k % CLI_WINDOW_WIDTH == 0 && k != 0)
-            {
-                printf("\n\t");
-            }
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-/**
- * Prints the contents of a matrix. More specifically, it prints the contents
- * of a 2D dynamic integer array.
+ * Indicates progress of an operation.
  *
- * @param[in] container the 2D dynamic integer array
- * @param[in] container_typename a symbolic variable name for the printed container
- * @param[in] dim_1 the number of rows of the matrix
- * @param[in] dim_2 the number of columns of the matrix
+ * @param[in] percentage completion rate of the monitored task
  */
-void print_2D_INT_array(int** container, char* container_typename, int dim_1, int dim_2)
+void progress_bar::indicate_progress(double checkpoint, int x, int y)
 {
-    int i, j;
-
-    printf("For \"%s\":\n", container_typename);
-    for (i = 0; i < dim_1; i += 1)
+    gotoxy(x, y);
+    std::cout << "\r" << message << "\t|";
+    int ratio = (int)std::ceil(checkpoint * length);
+    int completion_percentage = (int)std::ceil(checkpoint * 100);
+    if (ratio > length)
     {
-        for (j = 0; j < dim_2; j += 1)
-        {
-            printf("%d ", container[i][j]);
-            if (j % CLI_WINDOW_WIDTH == 0 && j != 0)
-            {
-                printf("\n\t");
-            }
-        }
-        printf("\n");
+        ratio -= 1;
     }
-    printf("\n");
+    if (completion_percentage > 100)
+    {
+        completion_percentage -= 1;
+    }
+    for (int i = 0; i < ratio; i += 1)
+    {
+        bar[i] = progress_token;
+    }
+    std::cout << bar << "| " << std::setw(4) << completion_percentage << "%";
 }
 
-/**
- * Prints the contents of a matrix. More specifically, it prints the contents
- * of a 2D dynamic integer array.
- *
- * @param[in] container the 2D dynamic integer array
- * @param[in] container_typename a symbolic variable name for the printed container
- * @param[in] dim_1 the number of rows of the matrix
- * @param[in] dim_2 the number of columns of the matrix
- */
-void print_1D_INT_array(int* container, char* container_typename, int dim)
-{
-    int i;
-
-    printf("%s:\t", container_typename);
-    for (i = 0; i < dim; i += 1)
-    {
-        printf("%d ", container[i]);
-        if (i % CLI_WINDOW_WIDTH == 0 && i != 0)
-        {
-            printf("\n\t");
-        }
-    }
-    printf("\n");
-}
 
 /**
- * Prints epoch stats. More specifically, it prints the epoch's number 
+ * Prints epoch stats. More specifically, it prints the epoch's number
  * along with the model's acuracy and loss. It also prints the epoch's benchmark.
- * 
+ *
  * @param[in] epoch the epoch's number
  * @param[in] epoch_loss the model's loss during a certain epoch of training or evaluation
  * @param[in] epoch_accuracy the model's accuracy during a certain epoch of training or evaluation
  * @param[in] benchmark the epoch's benchmark
  */
-void print_epoch_stats(int epoch, long double epoch_loss, int epoch_accuracy, double benchmark)
+void print_epoch_stats(int epoch, double epoch_loss, int epoch_accuracy, double benchmark, int des_x, int des_y)
 {
+    gotoxy(des_x, des_y);
+    if (epoch == 0)
+    {
+        std::cout << "\n";
+    }
     if (epoch == -1)
     {
-        printf("\n\n[EVALUATION] [LOSS %.5e] [ACCURACY %6d out of %6d] Work took %3d seconds", epoch_loss, epoch_accuracy, (int)MNIST_TEST, (int)benchmark);
+        std::cout << "\n\n[EVALUATION] [LOSS " << std::fixed << std::setprecision(5) << epoch_loss << "] [ACCURACY " << std::setw(6) << epoch_accuracy << " out of " << (int)MNIST_TEST << "] Work took " << std::setw(4) << (int)benchmark << " seconds";
     }
     else
     {
-        printf("\n[EPOCH %4d] [LOSS %.5e] [ACCURACY %6d out of %6d] Work took %3d seconds", epoch, epoch_loss, epoch_accuracy, (int)MNIST_TRAIN, (int)benchmark);
+        std::cout << "\n[EPOCH " << std::setw(4) << epoch << "] [LOSS " << std::fixed << std::setprecision(5) << epoch_loss << "] [ACCURACY " << std::setw(6) << epoch_accuracy << " out of " << (int)MNIST_TRAIN << "] Work took " << std::setw(4) << (int)benchmark << " seconds";
     }
 }
 
 /**
- * Prints the executable's arguments.
- * 
- * @param[in] input_size the size of the model's input layer
- * @param[in] hidden_dim the sizes of the model's hidden layers
- * @param[in] output size the size of the model's output layer
- * @param[in] activation the model's actuvation function name
+ * Prints information regarding the usage and the available options of the project.
+ *
+ * @param[in] filename the filepath of the executable
+ *
+ * @note Upon this function's execution, the program is terminated.
  */
-void print_parser_results(int input_size, int* hidden_size, int hidden_dim, int output_size, char* activation)
+void usage(char* filename)
 {
-    printf("Input Layer:\t\t%d\n", input_size);
-    print_1D_INT_array(hidden_size, "Hidden Layer(s)", hidden_dim);
-    printf("Output layer:\t\t%d\n", output_size);
-    printf("\nActivation function:\t%s\n", activation);
+    std::cout << "Usage of " << filename << ":\n";
+    std::cout << "\t:option \'-i\': integer \t - \t The size of the input layer for the neural network.\n";
+    std::cout << "\t:option \'-h\': integer \t - \t The size of a hidden layer for the neural network.\n\t\t\t\t\t There can be multiple hidden layers. For every hidden layer, use this option.\n";
+    std::cout << "\t:option \'-o\': integer \t - \t The size of the output layer for the neural network.\n";
+    exit(8);
 }
