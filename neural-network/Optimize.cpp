@@ -3,13 +3,10 @@
 
 /**
  * Computes each neuron's error of a given neural network.
- *
- * @param[in, out] fcn the neural network instance
- * @param[in] y_train the expected output of the model for a given input
- * @param[in] A the matrix with the neurons' outputs
- * @param[in, out] delta the matrix with all the neurons' errors
- *
- * @note Although passed by reference, the neural network is not altered.
+
+ * @param[in, out] Y the expected output of the model for a given input
+ * 
+ * @note Although passed by reference, the `Y` placeholder is not altered.
  *
  * @note    Using the `REGISTER` variable, we can take advantage of the `reduction()` routine.
  *          The `delta` container is not contiguous and therefore cannot be 'reduced'.
@@ -27,7 +24,7 @@ void nn::back_propagation(double* (&Y))
     {
         delta[layers.size() - 2][neuron] = (a[layers.size() - 1][neuron] - Y[neuron]) * sig_derivative(a[layers.size() - 1][neuron]);               /// Computes the error of the neurons in the last layer
     }
-
+    
     dynamic_size = layers[layers.size() - 2];                                                                                                       /// Declares ammount of memory to store `delta` corresponding to the neurons of the last *hidden* layer
 
     REGISTER = (double*)calloc(dynamic_size, sizeof(double));                                                                                       /// Allocates the ammount of memory computed above
@@ -58,7 +55,6 @@ void nn::back_propagation(double* (&Y))
 
     for (int layer = 2; layer < layers.size() - 1; layer += 1)                                                                                      /// Computes the error for neurons in the remaining hidden layers using the same method
     {
-
         dynamic_size = layers[layers.size() - layer - 1];
 
         REGISTER = (double*)calloc(dynamic_size, sizeof(double));                                                                                   /// Allocates the ammount of memory computed above
@@ -90,13 +86,9 @@ void nn::back_propagation(double* (&Y))
 }
 
 /**
- * Optimizes weights by subtracted the precomputed error corresponding to each neuron pair (synapse).
- *
- * @param[in, out] fcn the neural network instance
- * @param[in] delta the matrix with all the neurons' errors
- * @param[in] A the matrix with the neurons' outputs
+ * Optimizes weights by subtracting the precomputed error corresponding to each neuron pair (synapse).
  */
-void nn::optimize()
+void nn::optimize(void)
 {
 #pragma omp parallel for collapse(2) num_threads(N_THREADS) schedule(runtime)
     for (int neuron = 0; neuron < layers[layers.size() - 1]; neuron += 1)                                                                           /// Loops through all neurons in the last layer

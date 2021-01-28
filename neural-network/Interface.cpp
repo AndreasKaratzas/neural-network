@@ -1,6 +1,13 @@
 
 #include "Interface.hpp"
 
+/**
+ * Includes graphic libraries depending on the host's OS.
+ * Sets up CLI environment and defines functions and modules
+ * for the CLI.
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 #ifdef _WIN32
 
 #ifndef ENABLE_VIRTUAL_TERMINAL_PROCESSING
@@ -10,6 +17,11 @@
 static HANDLE stdoutHandle, stdinHandle;
 static DWORD outModeInit, inModeInit;
 
+/**
+ * Sets up console (CLI) in Windows OS.
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void setupConsole(void)
 {
     DWORD outMode = 0, inMode = 0;
@@ -28,12 +40,8 @@ void setupConsole(void)
 
     outModeInit = outMode;
     inModeInit = inMode;
-
-    // Enable ANSI escape codes
-    outMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
-
-    // Set stdin as no echo and unbuffered
-    inMode &= ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);
+    outMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;                      /// Enable ANSI escape codes
+    inMode &= ~(ENABLE_ECHO_INPUT | ENABLE_LINE_INPUT);                 /// Set stdin as no echo and unbuffered
 
     if (!SetConsoleMode(stdoutHandle, outMode) || !SetConsoleMode(stdinHandle, inMode))
     {
@@ -41,14 +49,20 @@ void setupConsole(void)
     }
 }
 
+/**
+ * Resets console (CLI) in Windows OS. During
+ * the execution there might be some changes 
+ * in the CLI which need to be unmade upon 
+ * program's termination.
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void restoreConsole(void)
 {
-    // Reset colors
-    printf("\x1b[0m");
+    printf("\x1b[0m");                                                  /// Reset colors
 
-    // Reset console mode
     if (!SetConsoleMode(stdoutHandle, outModeInit) || !SetConsoleMode(stdinHandle, inModeInit))
-    {
+    {                                                                   /// Reset console mode
         exit(GetLastError());
     }
 }
@@ -57,6 +71,11 @@ void restoreConsole(void)
 static struct termios orig_term;
 static struct termios new_term;
 
+/**
+ * Sets up console (CLI) in Unix OS.
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void setupConsole(void)
 {
     tcgetattr(STDIN_FILENO, &orig_term);
@@ -67,16 +86,29 @@ void setupConsole(void)
     tcsetattr(STDIN_FILENO, TCSANOW, &new_term);
 }
 
+/**
+ * Resets console (CLI) in Unix OS. During
+ * the execution there might be some changes
+ * in the CLI which need to be unmade upon
+ * program's termination.
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void restoreConsole(void)
 {
-    // Reset colors
-    printf("\x1b[0m");
-
-    // Reset console mode
-    tcsetattr(STDIN_FILENO, TCSANOW, &orig_term);
+    printf("\x1b[0m");                                                  /// Reset colors
+    tcsetattr(STDIN_FILENO, TCSANOW, &orig_term);                       /// Reset console mode
 }
 #endif
 
+/**
+ * Fetches cursor position with respect to the CLI.
+ * 
+ * @param[in, out] row the row of the cursor in the CLI
+ * @param[in, out] col the column of the cursor in the CLI
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void getCursorPosition(int* row, int* col)
 {
     printf("\x1b[6n");
@@ -97,31 +129,66 @@ void getCursorPosition(int* row, int* col)
     fseek(stdin, 0, SEEK_END);
 }
 
+/**
+ * Clears CLI screen
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void clearScreen(void)
 {
     printf("\033[2J");
 }
 
+/**
+ * Places CLI cursor at defined position in the CLI.
+ * 
+ * @param[in] x the row to place the cursor
+ * @param[in] y the column to place the cursor
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ * 
+ * @remark https://stackoverflow.com/questions/10401724/move-text-cursor-to-particular-screen-coordinate
+ */
 void gotoxy(int x, int y)
 {
     printf("\x1b[%d;%df", x, y);
 }
 
+/**
+ * Hides the cursor from the CLI.
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void hideCursor(void)
 {
-    printf("\x1b[?25l");
+    printf("\033[?25l");
 }
 
+/**
+ * Makes CLI cursor visible.
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void showCursor(void)
 {
-    printf("\x1b[?25h");
+    printf("\033[?25h");
 }
 
+/**
+ * Saves cursor's position in the CLI.
+ *
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void saveCursorPosition(void)
 {
     printf("\x1b%d", 7);
 }
 
+/**
+ * Restores cursor's position in the CLI.
+ *
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
 void restoreCursorPosition(void)
 {
     printf("\x1b%d", 8);
@@ -131,6 +198,8 @@ void restoreCursorPosition(void)
  * Indicates progress of an operation.
  *
  * @param[in] percentage completion rate of the monitored task
+ * @param[in] x the row of the CLI to print the progess bar
+ * @param[in] y the column of the CLI to print the progess bar
  */
 void progress_bar::indicate_progress(double checkpoint, int x, int y)
 {
@@ -162,6 +231,8 @@ void progress_bar::indicate_progress(double checkpoint, int x, int y)
  * @param[in] epoch_loss the model's loss during a certain epoch of training or evaluation
  * @param[in] epoch_accuracy the model's accuracy during a certain epoch of training or evaluation
  * @param[in] benchmark the epoch's benchmark
+ * @param[in] des_x the row of the CLI to print the epoch stats message
+ * @param[in] des_y the column of the CLI to print the epoch stats message
  */
 void print_epoch_stats(int epoch, double epoch_loss, int epoch_accuracy, double benchmark, int des_x, int des_y)
 {

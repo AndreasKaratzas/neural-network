@@ -4,14 +4,13 @@
 /**
  * Feeds forward the given model a given input vector.
  *
- *
  * @note    To exploit the full capabilities of the OpenMP framework, we use `collapse()` routine wherever possible.
  *          To use this routine, the given vector must be contiguous, therefore a 2D dynamic array cannot be collapsed.
  *          That's why there are temporary variables called `REGISTERS`, which are the 1D temporary image of those 2D
  *          vectors. Those registers are used during the parallel computations, and then we utilize the `memmove()`
  *          routine which has O(1) time complexity and transfers the computations back to the 2D vectors.
  */
-void nn::forward()
+void nn::forward(void)
 {
     int dynamic_size;
     double* REGISTER;

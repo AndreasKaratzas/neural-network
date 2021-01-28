@@ -10,44 +10,44 @@
  */
 void nn::fit(dataset(&TRAIN))
 {
-    int shuffled_idx;
-    double start, end;
-    std::array<double, EPOCHS> loss;
-    std::array<int, EPOCHS> validity;
+    int shuffled_idx;                                                                       /// Decalres dample "pointer"
+    double start, end;                                                                      /// Declares epoch benchmark checkpoints
+    std::array<double, EPOCHS> loss;                                                        /// Declares container for training loss
+    std::array<int, EPOCHS> validity;                                                       /// Declares container for training accuracy
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, TRAIN.samples - 1);
+    std::random_device rd;                                                                  /// Initializes non-deterministic random generator
+    std::mt19937 gen(rd());                                                                 /// Seeds mersenne twister
+    std::uniform_int_distribution<> dist(0, TRAIN.samples - 1);                             /// Distribute results between 0 and sample count exclusive
 
-    x += 4;                                                                                 /// Change row for cursor
+    x += 10;                                                                                /// Change row for cursor
                                                                                             /// Change this depending on the ammount of loaded datasets
-    progress_bar progress{ "Training Neural Network ", char(219), CLI_WINDOW_WIDTH };
+    progress_bar progress{ "Training Neural Network ", char(219), CLI_WINDOW_WIDTH };       /// Initializes progress bar for training progress monitoring
 
     for (int epoch = 0; epoch < EPOCHS; epoch += 1)                                         /// Trains model
     {
         loss[epoch] = 0.0;                                                                  /// Initializes epoch's training loss
         validity[epoch] = 0;                                                                /// Initializes epoch's training accuracy
 
-        progress.indicate_progress((epoch + 1.0) / (EPOCHS + 0.0), x, 0);
+        progress.indicate_progress((epoch + 0.0) / (EPOCHS + 0.0), x, 0);
 
         start = omp_get_wtime();                                                            /// Benchmarks epoch
         for (int sample = 0; sample < TRAIN.samples; sample += 1)                           /// Iterates through all examples of the training dataset
         {
-            shuffled_idx = dist(gen);                                                       /// Selects a random example
+            shuffled_idx = dist(gen);                                                       /// Selects a random example to avoid unshuffled dataset event
             zero_grad(TRAIN.X[shuffled_idx]);                                               /// Resets the neurons of the neural network
             forward();                                                                      /// Feeds forward the selected input
             back_propagation(TRAIN.Y[shuffled_idx]);                                        /// Computes the error for every neuron in the network
             optimize();                                                                     /// Optimizes weights using pack propagation
-
             loss[epoch] += mse_loss(TRAIN.Y[shuffled_idx], TRAIN.classes);                  /// Updates epoch's loss of the model
             validity[epoch] += accuracy(TRAIN.Y[shuffled_idx], TRAIN.classes);              /// Updates epoch's accuracy of the model
         }
         end = omp_get_wtime();                                                              /// Terminates epoch's benchmark
 
         loss[epoch] /= (TRAIN.samples + 0.0);                                               /// Averages epoch's loss of the model
-        print_epoch_stats(epoch + 1, loss[epoch], validity[epoch], end - start, x + 2 + epoch + (epoch == 0 ? (-1) : 0), 0);
-        /// Prints epoch's loss, accuracy and benchmark
+        print_epoch_stats(epoch + 1, loss[epoch], validity[epoch], end - start, x + 2 + epoch, 0);
+                                                                                            /// Prints epoch's loss, accuracy and benchmark
     }
+    progress.indicate_progress(1.0, x, 0);
 }
 
 /**

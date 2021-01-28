@@ -1,6 +1,6 @@
 
 /**
- * Common.h
+ * Common.hpp
  *
  * In this header file, we define the constants
  * used throughout the project. We also
@@ -19,7 +19,7 @@
 #include <cstdio>                           /// printf()
 #include <cstring>                          /// memmove()
 #include <iomanip>                          /// std::setw
-#include <ostream>                          /// std::ostream
+#include <fstream>                          /// std::ostream
 #include <cassert>                          /// assert()
 #include <cstdlib>                          /// system()
 #include <iostream>                         /// std::cout
@@ -29,10 +29,10 @@
 #include <omp.h>                            /// OpenMP Multiprocessing Programming Framework
 
 #define array_sizeof(type) ((char *)(&type+1)-(char*)(&type))
- /// Macro that computes the size of an array
+                                            /// Macro that computes the size of an array
 typedef intptr_t ssize_t;                   /// Declares `ssize_t` type that is used in `Preprocessing.h`
 
-constexpr int EPOCHS = 100;                 /// Declares the number of epochs for the model's training
+constexpr int EPOCHS = 10;                 /// Declares the number of epochs for the model's training
 constexpr int N_THREADS = 12;               /// Specifies the number of threads to request from the OS
 constexpr int N_ACTIVATIONS = 2;            /// Declares the number of neuron activation functions declared in the project
 constexpr int CLI_WINDOW_WIDTH = 50;        /// Defines the length of the progress bar for the project's CLI
@@ -42,9 +42,8 @@ constexpr double MNIST_TRAIN = 60000.0;     /// Declares the number of training 
 constexpr double MNIST_TEST = 10000.0;      /// Declares the number of evaluation examples found in the MNIST dataset
 constexpr double EXP = 2.718282;            /// Defines the exponential constant `e`
 constexpr char TRAINING_DATA_FILEPATH[] = "C:/Users/andreas/Documents/workspace/source/repos/neural-network/neural-network/data/fashion-mnist_train.csv";
-/// Declares the filepath of the MNIST training CSV file
+                                            /// Declares the filepath of the MNIST training CSV file
 constexpr char EVALUATION_DATA_FILEPATH[] = "C:/Users/andreas/Documents/workspace/source/repos/neural-network/neural-network/data/fashion-mnist_test.csv";
-/// Declares the filepath of the MNIST evaluation CSV file
-
-static int x = 1;
-static int y = 0;
+                                            /// Declares the filepath of the MNIST evaluation CSV file
+static int x = 1;                           /// Defines the starting row for the program's CLI
+static int y = 0;                           /// Defines the starting column for the program's CLI

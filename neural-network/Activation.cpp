@@ -1,6 +1,31 @@
 
 #include "Activation.hpp"
 
+/** 
+ * Efficient implementation to calculate e raise to the power x. 
+ * 
+ * @param[in] x the numerical base of the power
+ * @param[in] y the numerical exponent of the power
+ * 
+ * @return the double precision floating point result of the power operation.
+ * 
+ * @note Returns approximate value of e^x using sum of first n terms of Taylor Series.
+ * 
+ * @remark https://www.geeksforgeeks.org/program-to-efficiently-calculate-ex/
+ */
+double exp(double x)
+{
+    double sum = 1.0;
+    int precision = 1000;
+
+    for (int i = precision - 1; i > 0; i -= 1)
+    {
+        sum = 1.0 + x * sum / i;
+    }
+
+    return sum;
+}
+
 /**
  * Filters the input using the sigmoid activation function.
  *
@@ -8,10 +33,39 @@
  *              point variable to be filtered by the sigmoid
  *
  * @return the filtered value
+ * 
+ * @note    The implementation does not utilize the std::exp routine to
+ *          avoid overflow failures.
  */
 double sigmoid(double x)
 {
-    return 1.0 / (1.0 + std::pow(EXP, -x)); /// Sigmoid formula
+    return 1.0 / (1.0 + exp(-x)); /// Sigmoid formula
+}
+
+/**
+ * Safe implementation of sigmoid. This implementation gives a more precise result.
+ * 
+ * @param[in] x this is the double precision floating
+ *              point variable to be filtered by the sigmoid
+ * 
+ * @return the filtered value
+ * 
+ * @note    The std::pow() function is low on performance.
+ */
+double safe_sigmoid(double x)
+{
+    if (x > 45.0)
+    {
+        return 1.0;
+    }
+    else if (x < -45.0)
+    {
+        return 0.0;
+    }
+    else
+    {
+        return 1.0 / (1.0 + std::pow(EXP, -x));
+    }
 }
 
 /**

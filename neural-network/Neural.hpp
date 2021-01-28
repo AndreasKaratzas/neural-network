@@ -1,12 +1,9 @@
 /**
- * Neural.h
+ * Neural.hpp
  *
- * In this header file, we define all
- * the functions that handle factors of
- * the neural network. Those factors
- * include the weights of the network as
- * well as the activation function used
- * across the model.
+ * In this header file, we define 
+ * a template for the custom neural 
+ * network.
  */
 
 #pragma once
@@ -15,6 +12,18 @@
 #include "Dataset.hpp"
 #include "Activation.hpp"
 
+/**
+ * Implements a Multi Layer Perceptron model.
+ * 
+ * The neural network works with sigmoid 
+ * activation function and Mean Squared 
+ * Error loss function. However, there 
+ * is potential for support of various 
+ * activation and loss functions. The
+ * performance of the neural network 
+ * class has been optimized with OpenMP
+ * framework.
+ */
 class nn
 {
 public:
@@ -29,16 +38,17 @@ public:
     void set_weights(const std::vector<int>& l, const double min, const double max);
     void compile(const std::vector<int>& l, const double min, const double max);
     void zero_grad(double* (&X));
-    void forward();
+    void forward(void);
     void back_propagation(double* (&Y));
-    void optimize();
+    void optimize(void);
     int get_label(double* (&y_pred));
-    int predict(double* (&X), double* (&Y));
-    double mse_loss(double* (&Y), int c);
-    int accuracy(double* (&Y), int c);
+    int predict(double* (&X));
+    double mse_loss(double* (&Y), int dim);
+    int accuracy(double* (&Y), int dim);
     void fit(dataset(&TRAIN));
     void evaluate(dataset(&TEST));
     void export_weights(std::string filename);
+    void summary(void);
 
     nn()
     {

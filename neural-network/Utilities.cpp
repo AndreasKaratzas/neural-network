@@ -1,12 +1,22 @@
 
 #include "Neural.hpp"
 
+/**
+ * This function pools the element with the maximum value from the
+ * predictions vector.
+ *
+ * @param[in, out] y_pred the predictions vector
+ *
+ * @return the index of the element with the maximum value
+ * 
+ * @note Although passed by reference, `y_pred` is not altered.
+ */
 int nn::get_label(double* (&y_pred))
 {
     int label;
     double max_val = -2.0;
 
-    for (int i = 0; i < layers.back(); i += 1)
+    for (int i = 0; i < layers[layers.size() - 1]; i += 1)
     {
         if (y_pred[i] > max_val)
         {
@@ -18,14 +28,27 @@ int nn::get_label(double* (&y_pred))
     return label;
 }
 
-int nn::predict(double* (&X), double* (&Y))
+/**
+ * Uses model to make predictions using custom inputs.
+ * 
+ * @param[in, out] X the input to be given to the model
+ * 
+ * @return the predicted class with respect to the given input
+ * 
+ * @note Although passed by reference, the `X` placeholder is not altered.
+ */
+int nn::predict(double* (&X))
 {
     zero_grad(X);
     forward();
-    return get_label(z[layers.size() - 1]);
+    return get_label(a[layers.size() - 1]);
 }
 
-
+/**
+ * Initializes model structure.
+ * 
+ * @param[in] l the vector containing the model's structure
+ */
 void nn::set_layers(const std::vector<int>& l)
 {
     for (auto& elem : l)
@@ -89,32 +112,39 @@ void nn::set_delta(const std::vector<int>& l)
     }
 }
 
+/**
+ * Sets model's weights of synapses.
+ * 
+ * @param[in] l the neural network layer structure vector
+ * @param[in] min the minimum weight of a synapse
+ * @param[in] max the maximum weight of a synapse
+ */
 void nn::set_weights(const std::vector<int>& l, const double min, const double max)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dist(min, max);
+    std::random_device rd;                                              /// Initializes non-deterministic random generator
+    std::mt19937 gen(rd());                                             /// Seeds mersenne twister
+    std::uniform_real_distribution<> dist(min, max);                    /// Distribute results between `min` and `max` inclusive
 
-    weights = new double** [l.size() - 1];
+    weights = new double** [l.size() - 1];                              /// Allocates memory for the weights container
     for (int i = 1; i < l.size() - 1; i += 1)
     {
-        weights[i - 1] = new double* [l[i] - 1];
+        weights[i - 1] = new double* [l[i] - 1];                        /// Allocates memory for the weigts of a layer in a neural network
         for (int j = 0; j < l[i] - 1; j += 1)
         {
-            weights[i - 1][j] = new double[l[i - 1]];
+            weights[i - 1][j] = new double[l[i - 1]];                   /// Allocates memory for the weigths of each neuron in a layer
             for (int k = 0; k < l[i - 1]; k += 1)
             {
-                weights[i - 1][j][k] = dist(gen);
+                weights[i - 1][j][k] = dist(gen);                       /// Uses random generator to initialize synapse
             }
         }
     }
-    weights[l.size() - 2] = new double* [l.back()];
-    for (int j = 0; j < l.back(); j += 1)
+    weights[l.size() - 2] = new double* [l[l.size() - 1]];              /// Initializes weights in the output layer
+    for (int j = 0; j < l[l.size() - 1]; j += 1)                        /// There is no bias in the output layer
     {
-        weights[l.size() - 2][j] = new double[l[l.size() - 2]];
+        weights[l.size() - 2][j] = new double[l[l.size() - 2]];         /// Allocates memory for the weigths of each neuron in the output layer
         for (int k = 0; k < l[l.size() - 2]; k += 1)
         {
-            weights[l.size() - 2][j][k] = dist(gen);
+            weights[l.size() - 2][j][k] = dist(gen);                    /// Uses random generator to initialize synapse
         }
     }
 }
@@ -137,38 +167,48 @@ void nn::compile(const std::vector<int>& l, const double min, const double max)
  */
 void nn::zero_grad(double* (&X))
 {
-    for (int i = 0; i < layers.size(); i += 1)
+    for (int j = 0; j < layers[0] - 1; j += 1)                          /// Prepare - initialize input layer
     {
-        if (i == 0)
+        z[0][j] = X[j];
+        a[0][j] = X[j];
+    }
+    z[0][layers[0] - 1] = 1.0;
+    a[0][layers[0] - 1] = 1.0;
+
+    for (int i = 1; i < layers.size() - 1; i += 1)                      /// Prepare - initialize hidden layers
+    {
+        for (int j = 0; j < layers[i] - 1; j += 1)
         {
-            for (int j = 0; j < layers[i] - 1; j += 1)
-            {
-                z[i][j] = X[j];
-                a[i][j] = X[j];
-            }
-            z[i][layers[i] - 1] = 1.0;
-            a[i][layers[i] - 1] = 1.0;
+            z[i][j] = 0.0;
+            a[i][j] = 0.0;
+            delta[i - 1][j] = 0.0;
         }
-        else if (i == layers.size() - 1)
-        {
-            for (int j = 0; j < layers[i]; j += 1)
-            {
-                z[i][j] = 0.0;
-                a[i][j] = 0.0;
-                delta[i - 1][j] = 0.0;
-            }
-        }
-        else
-        {
-            for (int j = 0; j < layers[i] - 1; j += 1)
-            {
-                z[i][j] = 0.0;
-                a[i][j] = 0.0;
-                delta[i - 1][j] = 0.0;
-            }
-            z[i][layers[i] - 1] = 1.0;
-            a[i][layers[i] - 1] = 1.0;
-            delta[i - 1][layers[i] - 1] = 0.0;
-        }
+        z[i][layers[i] - 1] = 1.0;
+        a[i][layers[i] - 1] = 1.0;
+        delta[i - 1][layers[i] - 1] = 0.0;
+    }
+
+    for (int j = 0; j < layers[layers.size() - 1]; j += 1)              /// Prepare - initialize output layer
+    {
+        z[layers.size() - 1][j] = 0.0;
+        a[layers.size() - 1][j] = 0.0;
+        delta[layers.size() - 2][j] = 0.0;
+    }
+}
+
+/**
+ * Prints Neural Network layer structure.
+ */
+void nn::summary(void)
+{
+    int l = 0;
+    
+    std::string s(CLI_WINDOW_WIDTH + 10, '-');
+
+    std::cout << "\n\nNeural Network Summary:\t\t[f := Sigmoid]\n" << s << std::endl;
+    
+    for (auto& elem : layers)
+    {
+        std::cout << "Layer [" << ++l << "]\t" << std::setw(4) << elem << " neurons\n" << (l == 3 ? "\n" : "");
     }
 }

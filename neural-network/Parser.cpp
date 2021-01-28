@@ -28,16 +28,10 @@ int parse_integer(char* argv)
  *
  * @param[in] argc the number of user arguments
  * @param[in] argv the vector of the user arguments
- * @param[in] input_size the size of the input layer for the neural network
- * @param[in] hidden_size the vector with the number of neurons for each hidden layer in the neural network
- * @param[in] output_size the size of the output layer for the neural network
- * @param[in] activation string corresponding to the model's activation function
- *
- * @return the number of the hidden layers
+ * @param[in, out] vec the container to be given the neural network's structure
  */
 void parse_arguments(int argc, char* argv[], std::vector<int>& vec)
 {
-    int len, hidden_dim = 1;
     char* filename = argv[0];
 
     while ((argc > 1) && (argv[1][0] == '-'))                                           /// Loops through all arguments
@@ -45,10 +39,10 @@ void parse_arguments(int argc, char* argv[], std::vector<int>& vec)
         switch (argv[1][1])                                                             /// Stops when there are no more arguments
         {
         case 'i':                                                                       /// '-i' option: This is used to give an input size for the first layer of the model
-            vec.push_back(parse_integer(&argv[2][0]));
+            vec.push_back(parse_integer(&argv[2][0]) + 1);
             break;
         case 'h':                                                                       /// '-h' option: This is used to give the size of a hidden layer of the model
-            vec.push_back(parse_integer(&argv[2][0]));                                  /// There can be more than one hidden layers, and all have to be initialized using the '-h' option
+            vec.push_back(parse_integer(&argv[2][0]) + 1);                              /// There can be more than one hidden layers, and all have to be initialized using the '-h' option
             break;
         case 'o':                                                                       /// '-o' option: This is used to give an output size for the last layer of the model
             vec.push_back(parse_integer(&argv[2][0]));

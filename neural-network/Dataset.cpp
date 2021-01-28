@@ -124,8 +124,8 @@ void dataset::read_csv(const char* filename, int dataset_flag)
 
         rewind(stream);
 
-        X = new double* [(int)(dataset_flag == 0 ? MNIST_TRAIN : MNIST_TEST)];                                  /// Initializes the X instance, which is the container with the neural network's input samples
-        Y = new double* [(int)(dataset_flag == 0 ? MNIST_TRAIN : MNIST_TEST)];                                  /// Initializes the Y instance, which is the container with the neural network's corresponding (expected) outputs
+        X = new double* [(dataset_flag == 0 ? (int)MNIST_TRAIN : (int)MNIST_TEST)];                             /// Initializes the X instance, which is the container with the neural network's input samples
+        Y = new double* [(dataset_flag == 0 ? (int)MNIST_TRAIN : (int)MNIST_TEST)];                             /// Initializes the Y instance, which is the container with the neural network's corresponding (expected) outputs
 
         if ((read = getline(&line, &len, stream)) != -1)                                                        /// Parse first row in the given CSV file
         {
@@ -143,21 +143,21 @@ void dataset::read_csv(const char* filename, int dataset_flag)
         while ((read = getline(&line, &len, stream)) != -1)                                                     /// Do the same for all the other rows
         {
 
-            progress.indicate_progress((rows + 0.0) / (dataset_flag == 0 ? MNIST_TRAIN : MNIST_TEST), x, y);
+            progress.indicate_progress((rows + 0.0) / (dataset_flag == 0 ? MNIST_TRAIN : MNIST_TEST), x, y);    /// Use a progress bar as user interface since the dataset might be large
 
             char* token = strtok(line, delimiter);
-            /// Use a aprogress bar as user interface since the dataset might be large
+
             columns = 0;
 
-            X[rows - 1] = new double[dimensions];
-            Y[rows - 1] = new double[classes];
+            X[rows - 1] = new double[dimensions];                                                               /// Initialize `X` placeholder. In this container, we will store the samples' input for the model
+            Y[rows - 1] = new double[classes];                                                                  /// Initialize `Y` placeholder. In this container, we will store the samples' corresponding (expected) to train the model
 
-            if (sscanf(token, "%d", &intval) != 1)
+            if (sscanf(token, "%d", &intval) != 1)                                                              /// Masks invalid data error
             {
-                fprintf(stderr, "error - not an integer");
+                fprintf(stderr, "error - not an integer");                                                      /// Expecrting integer value type data
             }
 
-            for (y_idx = 0; y_idx < MNIST_CLASSES; y_idx += 1)
+            for (y_idx = 0; y_idx < classes; y_idx += 1)                                                        /// Convert integer to `Y` value for the model depending on the number of classes
             {
                 if (y_idx == intval)
                 {
@@ -169,7 +169,7 @@ void dataset::read_csv(const char* filename, int dataset_flag)
                 }
             }
 
-            while (token != NULL)
+            while (token != NULL)                                                                               /// Separate fetched line into input tokens using commas as separators
             {
                 token = strtok(NULL, delimiter);
                 if (token != NULL)
@@ -189,11 +189,22 @@ void dataset::read_csv(const char* filename, int dataset_flag)
 
         samples = rows - 1;
 
-        x += 2;
+        x += 2;                                                                                                 /// Update CLI interface status
     }
 }
 
-
+/**
+ * Fetches the class label. The `Y` placeholder an element initialized 
+ * with 1.0 (one) indicating the sample's class. All other elements are
+ * initialized with 0 (zero).
+ * 
+ * @param[in] sample the index of the sample in the dataset
+ * 
+ * @return an integer corresponding to the class of the given sample
+ * 
+ * @note    To solve double comparison fault due to precision representation error,
+ *          we use the greater operand, since 0.0 < 0.9 and 1.0 > 0.9.
+ */
 int dataset::get_label(int sample)
 {
     int label;
@@ -209,7 +220,10 @@ int dataset::get_label(int sample)
     return label;
 }
 
-void dataset::print_dataset()
+/**
+ * Prints every sample in the dataset.
+ */
+void dataset::print_dataset(void)
 {
     for (int i = 0; i < samples; i += 1)
     {
@@ -217,6 +231,10 @@ void dataset::print_dataset()
         for (int j = 0; j < dimensions; j += 1)
         {
             std::cout << X[i][j] << " ";
+            if (j % CLI_WINDOW_WIDTH == 0 && j != 0)                                                            /// If the number of elements in `X` placeholder is large, split the elements into multiple lines
+            {
+                std::cout << "\n";
+            }
         }
         std::cout << "\tLabel: " << get_label(i);
         std::cout << std::endl;

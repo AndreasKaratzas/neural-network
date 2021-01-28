@@ -1,6 +1,6 @@
 
 /**
- * Interface.h
+ * Interface.hpp
  *
  * In this header file, we implement a
  * basic User Interface using the Command
@@ -9,7 +9,11 @@
  * processed by the neural network, about
  * the dataset, about the neural network's
  * progress and help the user understand
- * how to use the project.
+ * how to use the project. there is also a 
+ * cross platform implementation of a progress
+ * bar.
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
  */
 
 #pragma once
@@ -37,6 +41,17 @@ void showCursor(void);
 void saveCursorPosition(void);
 void restoreCursorPosition(void);
 
+
+/**
+ * Implements a progress bar in CLI.
+ * 
+ * Instances of this class are progress bars 
+ * that inform the user of a large task's 
+ * progress. There is also a short description
+ * attached to each progress bar. The description 
+ * is recommended not to exceed the length of 35
+ * characters.
+ */
 class progress_bar
 {
 public:
