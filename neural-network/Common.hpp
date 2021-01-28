@@ -32,7 +32,7 @@
                                             /// Macro that computes the size of an array
 typedef intptr_t ssize_t;                   /// Declares `ssize_t` type that is used in `Preprocessing.h`
 
-constexpr int EPOCHS = 10;                 /// Declares the number of epochs for the model's training
+constexpr int EPOCHS = 100;                 /// Declares the number of epochs for the model's training
 constexpr int N_THREADS = 12;               /// Specifies the number of threads to request from the OS
 constexpr int N_ACTIVATIONS = 2;            /// Declares the number of neuron activation functions declared in the project
 constexpr int CLI_WINDOW_WIDTH = 50;        /// Defines the length of the progress bar for the project's CLI
