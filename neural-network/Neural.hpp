@@ -71,11 +71,11 @@ public:
         delete[] delta;
         for (int i = 1; i < layers.size(); i += 1)
         {
-            for (int j = 0; j < layers[i]; j += 1)
+            for (int j = 0; j < layers[i] - 1; j += 1)
             {
-                delete[] weights[i][j];
+                delete[] weights[i - 1][j];
             }
-            delete[] weights[i];
+            delete[] weights[i - 1];
         }
         delete[] weights;
 

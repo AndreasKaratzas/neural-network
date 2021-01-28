@@ -209,6 +209,6 @@ void nn::summary(void)
     
     for (auto& elem : layers)
     {
-        std::cout << "Layer [" << ++l << "]\t" << std::setw(4) << elem << " neurons\n" << (l == 3 ? "\n" : "");
+        std::cout << "Layer [" << ++l << "]\t" << std::setw(4) << elem << " neurons\n";
     }
 }

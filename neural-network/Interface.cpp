@@ -66,6 +66,81 @@ void restoreConsole(void)
         exit(GetLastError());
     }
 }
+
+/**
+ * Evaluates CLI window size in Windows OS.
+ * 
+ * @param[in, out] rows the number of rows of interface found
+ * @param[in, out] columns the number of columns of interface found
+ * 
+ * @remark https://stackoverflow.com/questions/23369503/get-size-of-terminal-window-rows-columns
+ */
+void getWindowSize(int (&rows), int (&columns))
+{
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+}
+
+/**
+ * Sets CLI window size.
+ *
+ * @param[in] x the number of rows for the CLI
+ * @param[in] y the number of columns for the CLI
+ *
+ * @remark https://www.cplusplus.com/forum/windows/121444/#msg661553
+ */
+void SetConsoleWindowSize(int x, int y)
+{
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    if (h == INVALID_HANDLE_VALUE)
+        throw std::runtime_error("Unable to get stdout handle.");
+
+    // If either dimension is greater than the largest console window we can have,
+    // there is no point in attempting the change.
+    {
+        COORD largestSize = GetLargestConsoleWindowSize(h);
+        if (x > largestSize.X)
+            throw std::invalid_argument("The x dimension is too large.");
+        if (y > largestSize.Y)
+            throw std::invalid_argument("The y dimension is too large.");
+    }
+
+
+    CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
+    if (!GetConsoleScreenBufferInfo(h, &bufferInfo))
+        throw std::runtime_error("Unable to retrieve screen buffer info.");
+
+    SMALL_RECT& winInfo = bufferInfo.srWindow;
+    COORD windowSize = { winInfo.Right - winInfo.Left + 1, winInfo.Bottom - winInfo.Top + 1 };
+
+    if (windowSize.X > x || windowSize.Y > y)
+    {
+        // window size needs to be adjusted before the buffer size can be reduced.
+        SMALL_RECT info =
+        {
+            0,
+            0,
+            x < windowSize.X ? x - 1 : windowSize.X - 1,
+            y < windowSize.Y ? y - 1 : windowSize.Y - 1
+        };
+
+        if (!SetConsoleWindowInfo(h, TRUE, &info))
+            throw std::runtime_error("Unable to resize window before resizing buffer.");
+    }
+
+    COORD size = { x, y };
+    if (!SetConsoleScreenBufferSize(h, size))
+        throw std::runtime_error("Unable to resize screen buffer.");
+
+
+    SMALL_RECT info = { 0, 0, x - 1, y - 1 };
+    if (!SetConsoleWindowInfo(h, TRUE, &info))
+        throw std::runtime_error("Unable to resize window after resizing buffer.");
+}
 #else
 
 static struct termios orig_term;
@@ -99,6 +174,36 @@ void restoreConsole(void)
     printf("\x1b[0m");                                                  /// Reset colors
     tcsetattr(STDIN_FILENO, TCSANOW, &orig_term);                       /// Reset console mode
 }
+
+/**
+ * Evaluates CLI window size in Unix OS.
+ *
+ * @param[in, out] rows the number of rows of interface found
+ * @param[in, out] columns the number of columns of interface found
+ *
+ * @remark https://stackoverflow.com/questions/23369503/get-size-of-terminal-window-rows-columns
+ */
+void getWindowSize(int(&rows), int(&columns))
+{
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    rows = w.ws_row;
+    columns = w.ws_col;
+}
+
+
+/**
+ * Sets CLI window size.
+ *
+ * @param[in] x the number of rows for the CLI
+ * @param[in] y the number of columns for the CLI
+ *
+ * @remark https://apple.stackexchange.com/questions/33736/can-a-terminal-window-be-resized-with-a-terminal-command
+ */
+void SetConsoleWindowSize(int x, int y)
+{
+    printf("\x1b[8;%d;%dt", x, y);
+}
 #endif
 
 /**
@@ -130,13 +235,61 @@ void getCursorPosition(int* row, int* col)
 }
 
 /**
- * Clears CLI screen
+ * Moves CLI cursor Up.
+ * 
+ * @param[in] positions number of rows to move cursor up
+ * 
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
+void moveUp(int positions) 
+{
+    printf("\x1b[%dA", positions);
+}
+
+/**
+ * Moves CLI cursor Down.
+ * 
+ * @param[in] positions number of rows to move cursor down
+ *
+ * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
+ */
+void moveDown(int positions) 
+{
+    printf("\x1b[%dB", positions);
+}
+
+/**
+ * Scrolls CLI window Up.
+ * 
+ * @param[in] positions number of rows to scroll up
+ *
+ * @remark https://en.wikipedia.org/wiki/ANSI_escape_code
+ */
+void scrollUp(int positions)
+{
+    printf("\x1b[%dS", positions);
+}
+
+/**
+ * Scrolls CLI window Down.
+ * 
+ * @param[in] positions number of rows to scroll down
+ *
+ * @remark https://en.wikipedia.org/wiki/ANSI_escape_code
+ */
+void scrollDown(int positions)
+{
+    printf("\x1b[%dT", positions);
+}
+
+/**
+ * Clears CLI screen.
  * 
  * @remark https://github.com/sol-prog/ansi-escape-codes-windows-posix-terminals-c-programming-examples
  */
 void clearScreen(void)
 {
-    printf("\033[2J");
+    printf("\x1b[2J\x1b[H");
 }
 
 /**
@@ -161,7 +314,7 @@ void gotoxy(int x, int y)
  */
 void hideCursor(void)
 {
-    printf("\033[?25l");
+    printf("\x1b[?25l");
 }
 
 /**
@@ -171,7 +324,7 @@ void hideCursor(void)
  */
 void showCursor(void)
 {
-    printf("\033[?25h");
+    printf("\x1b[?25h");
 }
 
 /**
@@ -203,7 +356,6 @@ void restoreCursorPosition(void)
  */
 void progress_bar::indicate_progress(double checkpoint, int x, int y)
 {
-    gotoxy(x, y);
     std::cout << "\r" << message << "\t|";
     int ratio = (int)std::ceil(checkpoint * length);
     int completion_percentage = (int)std::ceil(checkpoint * 100);
@@ -234,13 +386,8 @@ void progress_bar::indicate_progress(double checkpoint, int x, int y)
  * @param[in] des_x the row of the CLI to print the epoch stats message
  * @param[in] des_y the column of the CLI to print the epoch stats message
  */
-void print_epoch_stats(int epoch, double epoch_loss, int epoch_accuracy, double benchmark, int des_x, int des_y)
+void print_epoch_stats(int epoch, double epoch_loss, int epoch_accuracy, double benchmark)
 {
-    gotoxy(des_x, des_y);
-    if (epoch == 0)
-    {
-        std::cout << "\n";
-    }
     if (epoch == -1)
     {
         std::cout << "\n\n[EVALUATION] [LOSS " << std::fixed << std::setprecision(5) << epoch_loss << "] [ACCURACY " << std::setw(6) << epoch_accuracy << " out of " << (int)MNIST_TEST << "] Work took " << std::setw(4) << (int)benchmark << " seconds";

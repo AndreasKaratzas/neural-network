@@ -24,16 +24,23 @@
 #define _CRT_SECURE_NO_WARNINGS 1
 #include <windows.h>
 #else
+#include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
 #endif
 
 void setupConsole(void);
 void restoreConsole(void);
+void getWindowSize(int(&rows), int(&columns));
 void getCursorPosition(int* row, int* col);
 void usage(char* filename);
-void print_epoch_stats(int epoch, double epoch_loss, int epoch_accuracy, double benchmark, int des_x, int des_y);
+void print_epoch_stats(int epoch, double epoch_loss, int epoch_accuracy, double benchmark);
 
+void SetConsoleWindowSize(int x, int y);
+void moveUp(int positions);
+void moveDown(int positions);
+void scrollUp(int positions);
+void scrollDown(int positions);
 void clearScreen(void);
 void gotoxy(int x, int y);
 void hideCursor(void);

@@ -16,7 +16,7 @@
 double exp(double x)
 {
     double sum = 1.0;
-    int precision = 1000;
+    int precision = 100;
 
     for (int i = precision - 1; i > 0; i -= 1)
     {
@@ -28,6 +28,7 @@ double exp(double x)
 
 /**
  * Filters the input using the sigmoid activation function.
+ * This implementation exploits Taylor series for fast computation.
  *
  * @param[in] x this is the double precision floating
  *              point variable to be filtered by the sigmoid
@@ -37,9 +38,20 @@ double exp(double x)
  * @note    The implementation does not utilize the std::exp routine to
  *          avoid overflow failures.
  */
-double sigmoid(double x)
+double fast_sigmoid(double x)
 {
-    return 1.0 / (1.0 + exp(-x)); /// Sigmoid formula
+    if (x > 45.0)
+    {
+        return 1.0;
+    }
+    else if (x < -45.0)
+    {
+        return 0.0;
+    }
+    else
+    {
+        return 1.0 / (1.0 + exp(-x));       /// Sigmoid formula
+    }
 }
 
 /**
@@ -52,7 +64,7 @@ double sigmoid(double x)
  * 
  * @note    The std::pow() function is low on performance.
  */
-double safe_sigmoid(double x)
+double sigmoid(double x)
 {
     if (x > 45.0)
     {

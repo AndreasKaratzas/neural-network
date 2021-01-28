@@ -18,17 +18,11 @@ void nn::fit(dataset(&TRAIN))
     std::random_device rd;                                                                  /// Initializes non-deterministic random generator
     std::mt19937 gen(rd());                                                                 /// Seeds mersenne twister
     std::uniform_int_distribution<> dist(0, TRAIN.samples - 1);                             /// Distribute results between 0 and sample count exclusive
-
-    x += 10;                                                                                /// Change row for cursor
                                                                                             /// Change this depending on the ammount of loaded datasets
-    progress_bar progress{ "Training Neural Network ", char(219), CLI_WINDOW_WIDTH };       /// Initializes progress bar for training progress monitoring
-
     for (int epoch = 0; epoch < EPOCHS; epoch += 1)                                         /// Trains model
     {
         loss[epoch] = 0.0;                                                                  /// Initializes epoch's training loss
         validity[epoch] = 0;                                                                /// Initializes epoch's training accuracy
-
-        progress.indicate_progress((epoch + 0.0) / (EPOCHS + 0.0), x, 0);
 
         start = omp_get_wtime();                                                            /// Benchmarks epoch
         for (int sample = 0; sample < TRAIN.samples; sample += 1)                           /// Iterates through all examples of the training dataset
@@ -44,10 +38,8 @@ void nn::fit(dataset(&TRAIN))
         end = omp_get_wtime();                                                              /// Terminates epoch's benchmark
 
         loss[epoch] /= (TRAIN.samples + 0.0);                                               /// Averages epoch's loss of the model
-        print_epoch_stats(epoch + 1, loss[epoch], validity[epoch], end - start, x + 2 + epoch, 0);
-                                                                                            /// Prints epoch's loss, accuracy and benchmark
+        print_epoch_stats(epoch + 1, loss[epoch], validity[epoch], end - start);            /// Prints epoch's loss, accuracy and benchmark
     }
-    progress.indicate_progress(1.0, x, 0);
 }
 
 /**
@@ -72,5 +64,5 @@ void nn::evaluate(dataset(&TEST))
     end = omp_get_wtime();                                                                  /// Terminates model's evaluation benchmark
 
     loss /= (TEST.samples + 0.0);
-    print_epoch_stats(-1, loss, validity, end - start, x + 2 + EPOCHS, 0);                  /// Prints evaluation loss, accuracy, and benchmark
+    print_epoch_stats(-1, loss, validity, end - start);                                     /// Prints evaluation loss, accuracy, and benchmark
 }

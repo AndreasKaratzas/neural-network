@@ -23,8 +23,9 @@
 #include <cassert>                          /// assert()
 #include <cstdlib>                          /// system()
 #include <iostream>                         /// std::cout
-#include <inttypes.h>                       /// intptr_t
+#include <stdexcept>                        /// std::runtime_error
 #include <algorithm>                        /// std::fill_n
+#include <inttypes.h>                       /// intptr_t
 
 #include <omp.h>                            /// OpenMP Multiprocessing Programming Framework
 

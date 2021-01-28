@@ -17,6 +17,7 @@
  */
 int main(int argc, char* argv[])
 {
+    int cli_rows, cli_cols, cursor_row, cursor_col;
     double start, end;
     std::vector<int> vec;
 
@@ -24,12 +25,7 @@ int main(int argc, char* argv[])
     dataset TRAIN(MNIST_CLASSES);                                                                   /// Declares training data subset
     dataset TEST(MNIST_CLASSES);                                                                    /// Declares evaluation data subset
 
-    setupConsole();                                                                                 /// Sets up the CLI interface
-    hideCursor();                                                                                   /// Hides cursor to save the user from epilepsy
-    clearScreen();                                                                                  /// Clears screen
-
     parse_arguments(argc, argv, vec);                                                               /// Parses user arguments
-
     start = omp_get_wtime();                                                                        /// Initializes benchmark
 
     TRAIN.read_csv(TRAINING_DATA_FILEPATH, 0);                                                      /// Initializes training data subset
@@ -44,9 +40,6 @@ int main(int argc, char* argv[])
     end = omp_get_wtime();                                                                          /// Terminates the benchmark
 
     std::cout << "\n\nBenchmark results: " << end - start << " seconds\n";                          /// Prints benchmark results
-
-    showCursor();                                                                                   /// Resets cursor visibility
-    restoreConsole();                                                                               /// Restores any changes made to the CLI
 
     return(0);
 }
