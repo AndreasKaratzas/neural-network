@@ -8,7 +8,7 @@ COMPILE_INF := -Wall -Wextra -fopt-info
 CXXFLAGS := -O3 -fopenmp -march=native -std=c++17
 
 BUILD_DIR := ./build
-SRC_DIRS := ./neural-network
+SRC_DIRS := ./src
 
 # Find all the C++ files we want to compile
 SRCS := $(shell find $(SRC_DIRS) -name *.cpp)
@@ -48,7 +48,6 @@ clean:
 	rm -r $(BUILD_DIR)
 
 run:
-	mkdir $(BUILD_DIR)/data
 	./$(BUILD_DIR)/$(TARGET_EXEC)
 
 # Include the .d makefiles. The - at the front suppresses the errors of missing
