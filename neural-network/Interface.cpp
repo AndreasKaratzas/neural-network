@@ -383,8 +383,6 @@ void progress_bar::indicate_progress(double checkpoint, int x, int y)
  * @param[in] epoch_loss the model's loss during a certain epoch of training or evaluation
  * @param[in] epoch_accuracy the model's accuracy during a certain epoch of training or evaluation
  * @param[in] benchmark the epoch's benchmark
- * @param[in] des_x the row of the CLI to print the epoch stats message
- * @param[in] des_y the column of the CLI to print the epoch stats message
  */
 void print_epoch_stats(int epoch, double epoch_loss, int epoch_accuracy, double benchmark)
 {
