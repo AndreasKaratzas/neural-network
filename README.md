@@ -11,16 +11,16 @@ This implementation runs on the system's __CPU__. The model created was tested u
 * Open a terminal
 * Clone the repository `git clone https://github.com/andreasceid/neural-network.git`
 * Change directory using `cd neural-network/`
-* Compile the project using `make`
-* Create the dataset directory using `mkdir data`
-* Extract the CSV files found on [Kaggle](https://www.kaggle.com/zalando-research/fashionmnist/data) in `data` directory created before
+* Compile the project using  `make`
+* Create the dataset directory using  `mkdir data`
+* Extract the CSV files found on [Kaggle](https://www.kaggle.com/zalando-research/fashionmnist/data) in  `data` directory created before
 * Execute the project:
     * To execute the project using the default settings, use `make run`
     * To execute the project using custom model architecture:
         * Change directory using `cd build`
         * Use `./neural-network -i <int> -h <int> [-h <int> ...] -o <int>`
 
-To rebuild the project, use `make clean` first and then execute `make` and `make run`.
+To rebuild the project, use  `make clean`  first and then execute  `make`  and  `make run`.
 
 ## Model Settings
 
@@ -34,7 +34,7 @@ With these settings, the training is expected to last around *25 minutes* in a m
 
 ## Fine tuning
 
-In `Common.hpp` there are parameters that can be tuned for better results. For example, there is a variable called `N_THREADS` that holds the nubmer of threads to request from the OS. This number is recommended to be equal to the number of the system's *logical cores*. Furthermore, in this file the user can edit the number of *epochs* of training for faster results and the model's *learning rate*. 
+In `Common.hpp` there are parameters that can be tuned for better results. For example, there is a variable called  `N_THREADS`  that holds the nubmer of threads to request from the OS. This number is recommended to be equal to the number of the system's  *logical cores*. Furthermore, in this file the user can edit the number of  *epochs*  of training for faster results and the model's  *learning rate*. 
 
 ## Results 
 
