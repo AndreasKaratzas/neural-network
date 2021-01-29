@@ -20,7 +20,7 @@ double exp(double x)
 
     for (int i = precision - 1; i > 0; i -= 1)
     {
-        sum = 1.0 + x * sum / i;
+        sum = 1.0 + x * sum / (double)i;
     }
 
     return sum;
@@ -40,11 +40,11 @@ double exp(double x)
  */
 double fast_sigmoid(double x)
 {
-    if (x > 45.0)
+    if (x > 13.0)
     {
         return 1.0;
     }
-    else if (x < -45.0)
+    else if (x < -13.0)
     {
         return 0.0;
     }

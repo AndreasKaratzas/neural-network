@@ -100,7 +100,7 @@ ssize_t dataset::getline(char** lineptr, size_t* n, FILE* stream)
  *          message about parsing either the training or the evaluation data subset.
  */
 
-void dataset::read_csv(const char* filename, int dataset_flag)
+void dataset::read_csv(const char* filename, int dataset_flag, double x_max)
 {
     FILE* stream;
     stream = fopen(filename, "r");
@@ -124,8 +124,8 @@ void dataset::read_csv(const char* filename, int dataset_flag)
 
         rewind(stream);
 
-        X = new double* [(dataset_flag == 0 ? (int)MNIST_TRAIN : (int)MNIST_TEST)];                             /// Initializes the X instance, which is the container with the neural network's input samples
-        Y = new double* [(dataset_flag == 0 ? (int)MNIST_TRAIN : (int)MNIST_TEST)];                             /// Initializes the Y instance, which is the container with the neural network's corresponding (expected) outputs
+        X = new double* [samples];                                                                              /// Initializes the X instance, which is the container with the neural network's input samples
+        Y = new double* [samples];                                                                              /// Initializes the Y instance, which is the container with the neural network's corresponding (expected) outputs
 
         if ((read = getline(&line, &len, stream)) != -1)                                                        /// Parse first row in the given CSV file
         {
@@ -143,7 +143,7 @@ void dataset::read_csv(const char* filename, int dataset_flag)
         while ((read = getline(&line, &len, stream)) != -1)                                                     /// Do the same for all the other rows
         {
 
-            progress.indicate_progress((rows + 0.0) / (dataset_flag == 0 ? MNIST_TRAIN : MNIST_TEST), x, y);    /// Use a progress bar as user interface since the dataset might be large
+            progress.indicate_progress((rows + 0.0) / samples, x, y);                                           /// Use a progress bar as user interface since the dataset might be large
 
             char* token = strtok(line, delimiter);
 
@@ -179,7 +179,7 @@ void dataset::read_csv(const char* filename, int dataset_flag)
                         fprintf(stderr, "error - not an integer");
                     }
 
-                    X[rows - 1][columns] = (intval + 0.0) / 255.0;                                              /// Normalize data to avoid overflow. For the MNIST dataset, max cell value is 255
+                    X[rows - 1][columns] = (intval + 0.0) / x_max;                                              /// Normalize data to avoid overflow. For the MNIST dataset, max cell value is 255
                     columns += 1;
                 }
             }
@@ -202,8 +202,9 @@ void dataset::read_csv(const char* filename, int dataset_flag)
  * 
  * @return an integer corresponding to the class of the given sample
  * 
- * @note    To solve double comparison fault due to precision representation error,
- *          we use the greater operand, since 0.0 < 0.9 and 1.0 > 0.9.
+ * @note    To solve double precision floating number comparison fault 
+ *          due to precision representation error, we use the greater
+ *          operand, since 0.0 < 0.9 and 1.0 > 0.9.
  */
 int dataset::get_label(int sample)
 {

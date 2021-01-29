@@ -37,16 +37,15 @@ public:
     double** X, ** Y;
 
     ssize_t getline(char** lineptr, size_t* n, FILE* stream);
-    void read_csv(const char* filename, int dataset_flag);
+    void read_csv(const char* filename, int dataset_flag, double x_max);
     int get_label(int sample);
     void print_dataset(void);
 
-    dataset(int classes) :
-        classes{ classes }
+    dataset(int classes, int samples) :
+        classes{ classes },
+        samples{ samples }
     {
-        samples = 0;
         dimensions = 0;
-
     }
 
     ~dataset()

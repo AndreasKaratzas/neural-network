@@ -22,14 +22,14 @@ int main(int argc, char* argv[])
     std::vector<int> vec;
 
     nn fcn;                                                                                         /// Declares the image of the neural network
-    dataset TRAIN(MNIST_CLASSES);                                                                   /// Declares training data subset
-    dataset TEST(MNIST_CLASSES);                                                                    /// Declares evaluation data subset
+    dataset TRAIN(MNIST_CLASSES, MNIST_TRAIN);                                                      /// Declares training data subset
+    dataset TEST(MNIST_CLASSES, MNIST_TEST);                                                        /// Declares evaluation data subset
 
     parse_arguments(argc, argv, vec);                                                               /// Parses user arguments
     start = omp_get_wtime();                                                                        /// Initializes benchmark
 
-    TRAIN.read_csv(TRAINING_DATA_FILEPATH, 0);                                                      /// Initializes training data subset
-    TEST.read_csv(EVALUATION_DATA_FILEPATH, 1);                                                     /// Initializes evaluation data subset
+    TRAIN.read_csv(TRAINING_DATA_FILEPATH, 0, MNIST_MAX_VAL);                                       /// Initializes training data subset
+    TEST.read_csv(EVALUATION_DATA_FILEPATH, 1, MNIST_MAX_VAL);                                      /// Initializes evaluation data subset
 
     fcn.compile(vec, -1.0, 1.0);                                                                    /// Initializes the neural network's image
     fcn.summary();                                                                                  /// Prints model structure
