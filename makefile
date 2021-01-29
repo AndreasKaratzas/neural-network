@@ -8,7 +8,7 @@ COMPILE_INF := -Wall -Wextra -fopt-info
 CXXFLAGS := -O3 -fopenmp -march=native -std=c++17
 
 BUILD_DIR := ./build
-SRC_DIRS := ./src
+SRC_DIRS := ./neural-network
 
 # Find all the C++ files we want to compile
 SRCS := $(shell find $(SRC_DIRS) -name *.cpp)
