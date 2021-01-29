@@ -48,7 +48,7 @@ clean:
 	rm -r $(BUILD_DIR)
 
 run:
-	./$(BUILD_DIR)/$(TARGET_EXEC)
+	./$(BUILD_DIR)/$(TARGET_EXEC) -i 784 -h 100 -o 10
 
 # Include the .d makefiles. The - at the front suppresses the errors of missing
 # Makefiles. Initially, all the .d files will be missing, and we don't want those
