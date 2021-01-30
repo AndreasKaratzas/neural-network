@@ -6,7 +6,9 @@
  * Trains the given model. The model is a simple multi-
  * layer feed forward perceptron.
  *
- * @param[in] TRAIN the training dataset
+ * @param[in, out] TRAIN the training dataset
+ *
+ * @note Although passed by reference, `TRAIN` is not altered.
  */
 void nn::fit(dataset(&TRAIN))
 {
@@ -45,7 +47,9 @@ void nn::fit(dataset(&TRAIN))
 /**
  * Evaluates the given model.
  *
- * @param[in] TEST the evaluation dataset
+ * @param[in, out] TEST the evaluation dataset
+ *
+ * @note Although passed by reference, `TEST` is not altered.
  */
 
 void nn::evaluate(dataset(&TEST))
