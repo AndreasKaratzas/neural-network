@@ -83,64 +83,6 @@ void getWindowSize(int (&rows), int (&columns))
     columns = csbi.srWindow.Right - csbi.srWindow.Left + 1;
     rows = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
 }
-
-/**
- * Sets CLI window size.
- *
- * @param[in] x the number of rows for the CLI
- * @param[in] y the number of columns for the CLI
- *
- * @remark https://www.cplusplus.com/forum/windows/121444/#msg661553
- */
-void SetConsoleWindowSize(int x, int y)
-{
-    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
-
-    if (h == INVALID_HANDLE_VALUE)
-        throw std::runtime_error("Unable to get stdout handle.");
-
-    // If either dimension is greater than the largest console window we can have,
-    // there is no point in attempting the change.
-    {
-        COORD largestSize = GetLargestConsoleWindowSize(h);
-        if (x > largestSize.X)
-            throw std::invalid_argument("The x dimension is too large.");
-        if (y > largestSize.Y)
-            throw std::invalid_argument("The y dimension is too large.");
-    }
-
-
-    CONSOLE_SCREEN_BUFFER_INFO bufferInfo;
-    if (!GetConsoleScreenBufferInfo(h, &bufferInfo))
-        throw std::runtime_error("Unable to retrieve screen buffer info.");
-
-    SMALL_RECT& winInfo = bufferInfo.srWindow;
-    COORD windowSize = { winInfo.Right - winInfo.Left + 1, winInfo.Bottom - winInfo.Top + 1 };
-
-    if (windowSize.X > x || windowSize.Y > y)
-    {
-        // window size needs to be adjusted before the buffer size can be reduced.
-        SMALL_RECT info =
-        {
-            0,
-            0,
-            x < windowSize.X ? x - 1 : windowSize.X - 1,
-            y < windowSize.Y ? y - 1 : windowSize.Y - 1
-        };
-
-        if (!SetConsoleWindowInfo(h, TRUE, &info))
-            throw std::runtime_error("Unable to resize window before resizing buffer.");
-    }
-
-    COORD size = { x, y };
-    if (!SetConsoleScreenBufferSize(h, size))
-        throw std::runtime_error("Unable to resize screen buffer.");
-
-
-    SMALL_RECT info = { 0, 0, x - 1, y - 1 };
-    if (!SetConsoleWindowInfo(h, TRUE, &info))
-        throw std::runtime_error("Unable to resize window after resizing buffer.");
-}
 #else
 
 static struct termios orig_term;
@@ -189,20 +131,6 @@ void getWindowSize(int(&rows), int(&columns))
     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
     rows = w.ws_row;
     columns = w.ws_col;
-}
-
-
-/**
- * Sets CLI window size.
- *
- * @param[in] x the number of rows for the CLI
- * @param[in] y the number of columns for the CLI
- *
- * @remark https://apple.stackexchange.com/questions/33736/can-a-terminal-window-be-resized-with-a-terminal-command
- */
-void SetConsoleWindowSize(int x, int y)
-{
-    printf("\x1b[8;%d;%dt", x, y);
 }
 #endif
 
