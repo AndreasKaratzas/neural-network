@@ -47,5 +47,3 @@ constexpr char TRAINING_DATA_FILEPATH[] = "../data/fashion-mnist_train.csv";
                                             /// Declares the filepath of the MNIST training CSV file
 constexpr char EVALUATION_DATA_FILEPATH[] = "../data/fashion-mnist_test.csv";
                                             /// Declares the filepath of the MNIST evaluation CSV file
-static int x = 1;                           /// Defines the starting row for the program's CLI
-static int y = 0;                           /// Defines the starting column for the program's CLI
