@@ -88,6 +88,7 @@ ssize_t dataset::getline(char** lineptr, size_t* n, FILE* stream)
  * @param[in] filename the file path of the CSV file to parse
  * @param[in] dataset_flag  if `0`, then the function parses training data
  *                          if `1`, then the function parses evaluation data
+ * @param[in] x_max this is used to normalize the dataset in range [0, 1]
  *
  * @note The structure of the csv must obey the following rules:
  *          * The first row contains the column descriptions
