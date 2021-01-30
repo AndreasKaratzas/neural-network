@@ -4,8 +4,7 @@
 /** 
  * Efficient implementation to calculate e raise to the power x. 
  * 
- * @param[in] x the numerical base of the power
- * @param[in] y the numerical exponent of the power
+ * @param[in] x the numerical exponent of the power
  * 
  * @return the double precision floating point result of the power operation.
  * 
