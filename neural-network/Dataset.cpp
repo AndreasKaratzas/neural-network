@@ -144,7 +144,7 @@ void dataset::read_csv(const char* filename, int dataset_flag, double x_max)
         while ((read = getline(&line, &len, stream)) != -1)                                                     /// Do the same for all the other rows
         {
 
-            progress.indicate_progress((rows + 0.0) / samples, x, y);                                           /// Use a progress bar as user interface since the dataset might be large
+            progress.indicate_progress((rows + 0.0) / samples);                                                 /// Use a progress bar as user interface since the dataset might be large
 
             char* token = strtok(line, delimiter);
 
@@ -189,8 +189,6 @@ void dataset::read_csv(const char* filename, int dataset_flag, double x_max)
         fclose(stream);
 
         samples = rows - 1;
-
-        x += 2;                                                                                                 /// Update CLI interface status
     }
 }
 
