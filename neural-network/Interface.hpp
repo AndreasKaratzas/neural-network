@@ -36,7 +36,6 @@ void getCursorPosition(int* row, int* col);
 void usage(char* filename);
 void print_epoch_stats(int epoch, double epoch_loss, int epoch_accuracy, double benchmark);
 
-void SetConsoleWindowSize(int x, int y);
 void moveUp(int positions);
 void moveDown(int positions);
 void scrollUp(int positions);
