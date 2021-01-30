@@ -42,7 +42,7 @@ The effective core utilization percentage was around 97 %. An example of executi
 
 ![Expected Output](expected-output.png)
 
-Below, there are multiple model architecures compared for research purposes:
+Below, there are multiple model architecures compared for research purposes using the fashion MNIST dataset:
 
 |  Model ID 	| First Hidden Layer 	| Second Hidden Layer 	| Third Hidden Layer 	| Activation Function 	| Epochs 	| Learning Rate 	| Accuracy 	|   loss  	|
 |:---------:	|:------------------:	|:-------------------:	|:------------------:	|:-------------------:	|:------:	|:-------------:	|:--------:	|:-------:	|
