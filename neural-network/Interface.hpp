@@ -68,7 +68,7 @@ public:
     int progress;
     int length;
 
-    void indicate_progress(double checkpoint, int x, int y);
+    void indicate_progress(double checkpoint);
 
     progress_bar(std::string message, char progress_token, int length) :
         message{ message },
