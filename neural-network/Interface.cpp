@@ -351,10 +351,8 @@ void restoreCursorPosition(void)
  * Indicates progress of an operation.
  *
  * @param[in] percentage completion rate of the monitored task
- * @param[in] x the row of the CLI to print the progess bar
- * @param[in] y the column of the CLI to print the progess bar
  */
-void progress_bar::indicate_progress(double checkpoint, int x, int y)
+void progress_bar::indicate_progress(double checkpoint)
 {
     std::cout << "\r" << message << "\t|";
     int ratio = (int)std::ceil(checkpoint * length);
