@@ -1,6 +1,6 @@
 # Neural Network
 
-In this repository, there is a simple implementation of a feed forward multi-layer Neuran Network from scratch. The project specifications are listed below:
+In this repository, there is a simple implementation of a feed forward multi-layer Neural Network from scratch. The project specifications are listed below:
 * Programming Language: *C++ 17*
 * Optimization framework: *OpenMP 5.1*
 
