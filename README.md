@@ -4,7 +4,7 @@ In this repository, there is a simple implementation of a feed forward multi-lay
 * Programming Language: *C++ 17*
 * Optimization framework: *OpenMP 5.1*
 
-This implementation runs on the system's __CPU__. The model created was tested using the [Fashion MNIST](https://www.kaggle.com/zalando-research/fashionmnist/data) dataset.
+This implementation runs on the system's __CPU__ in parallel. The model created was tested using the [Fashion MNIST](https://www.kaggle.com/zalando-research/fashionmnist/data) dataset.
 
 ## Installation
 
