@@ -19,6 +19,8 @@ This implementation runs on the system's __CPU__ in parallel. The model was test
     * To execute the project using custom model architecture:
         * Change directory using `cd build`
         * Use `./neural-network -i <int> -h <int> [-h <int> ...] -o <int>`
+        
+            For example `./neural-network -i 784 -h 150 -h 100 -h 50 -o 10`
 
 To rebuild the project, use  `make clean`  first and then execute  `make`  and  `make run`.
 
