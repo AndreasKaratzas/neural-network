@@ -56,8 +56,8 @@ Below, there are multiple model architecures compared for research purposes usin
 |     5     	|         150        	|         100         	|         50         	|       Sigmoid       	|   10   	|      0.3      	|   86.43  	| 0.09927  	|
 |     6     	|         150        	|         100         	|         50         	|       Sigmoid       	|   100  	|      0.1      	|   88.05 	| 0.09404  	|
 |     7     	|         150        	|         100         	|         50         	|       Sigmoid       	|   100  	|      0.01     	|   88.18 	| 0.09303 	|
-
+|     8     	|         150        	|         100         	|         50         	|       Sigmoid       	|   1000  	|      0.01     	|   88.18 	| 0.09303 	|
 
 ## Notes
 
-There is a [project report](lab4-neural-network.pdf) in Greek. 
+There is a [project report](lab4-neural-network.pdf) in Greek.
