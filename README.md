@@ -32,7 +32,7 @@ The model's settings are:
 * Loss function: **MSE**
 * Learning rate: **0.1**
 
-With these settings, the training is expected to last around *25 minutes* in a medium to high end machine. 
+With these settings, the training is expected to last around *25 minutes* running on a medium to high end machine. 
 
 ## Fine tuning
 
