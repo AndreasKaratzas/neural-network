@@ -58,7 +58,9 @@ Below, there are multiple model architecures compared for research purposes usin
 |     5     	|         150        	|         100         	|         50         	|       Sigmoid       	|   10   	|      0.3      	|   86.43  	| 0.09927  	|
 |     6     	|         150        	|         100         	|         50         	|       Sigmoid       	|   100  	|      0.1      	|   88.05 	| 0.09404  	|
 |     7     	|         150        	|         100         	|         50         	|       Sigmoid       	|   100  	|      0.01     	|   88.18 	| 0.09303 	|
-|     8     	|         150        	|         100         	|         50         	|       Sigmoid       	|   1000  	|      0.01     	|   88.18 	| 0.09303 	|
+|     8     	|         150        	|         100         	|         50         	|       Sigmoid       	|   1000  	|      0.01     	|   88.33 	| 0.10240 	|
+
+It's worth to mention that for the eighth model, the training accuracy was around 59200 out of 60000 and had a training loss equal to 0.00967. This means that for a feed - forward model, a test accuracy of 90 % on the test subset of the fashion MNIST dataset is a ceiling.
 
 ## Notes
 
