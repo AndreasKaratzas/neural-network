@@ -24,7 +24,7 @@ This implementation runs on the system's __CPU__ in parallel. The model was test
 
 To rebuild the project, use  `make clean`  first and then execute  `make`  and  `make run`.
 
-To compile using the Intel Compiler in a Windows environment, use: `icl Accuracy.cpp Activation.cpp Dataset.cpp Driver.cpp Export.cpp Fit.cpp Forward.cpp Interface.cpp Loss.cpp Optimize.cpp Parser.cpp Utilities.cpp /Qopenmp /O3 /Ot /GT /Ob2 /Oi /GA /fp:precise /QxHost /Qstd:c++17 /FeNeural-Network.exe`
+To compile using the Intel Compiler in a Windows environment, use: `icl Accuracy.cpp Activation.cpp Dataset.cpp Driver.cpp Export.cpp Fit.cpp Forward.cpp Interface.cpp Loss.cpp Optimize.cpp Parser.cpp Utilities.cpp /Qopenmp /Qunroll /Qipo /O3 /Ot /GT /Ob2 /Oi /GA /fp:precise /QxHost /Qstd:c++17 /FeNeural-Network.exe`
 
 ## Model Settings
 
