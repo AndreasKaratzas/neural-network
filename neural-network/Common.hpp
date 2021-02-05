@@ -43,7 +43,7 @@ constexpr double MNIST_TRAIN = 60000.0;     /// Declares the number of training 
 constexpr double MNIST_TEST = 10000.0;      /// Declares the number of evaluation examples found in the MNIST dataset
 constexpr double EXP = 2.718282;            /// Defines the exponential constant `e`
 constexpr double MNIST_MAX_VAL = 255.0;     /// Defines max value found in the input subset of theMNIST dataset
-constexpr char TRAINING_DATA_FILEPATH[] = "fashion-mnist_train.csv";
+constexpr char TRAINING_DATA_FILEPATH[] = "../data/fashion-mnist_train.csv";
                                             /// Declares the filepath of the MNIST training CSV file
-constexpr char EVALUATION_DATA_FILEPATH[] = "fashion-mnist_test.csv";
+constexpr char EVALUATION_DATA_FILEPATH[] = "../data/fashion-mnist_test.csv";
                                             /// Declares the filepath of the MNIST evaluation CSV file
