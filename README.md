@@ -8,7 +8,7 @@ This implementation runs on the system's __CPU__ in parallel. The model was test
 
 ## Disclaimer
 
-The executable generated is much more slower when compiled with either G++ or Microsoft Visual C++ compilers.
+The executable generated is much more slower when compiled with either G++ or Microsoft Visual C++ compilers. The recommended compiler is Intel Compiler version 19.1.
 
 ## Installation
 
