@@ -12,17 +12,13 @@ This implementation runs on the system's __CPU__ in parallel. The model was test
 * Clone the repository `git clone https://github.com/andreasceid/neural-network.git`
 * Change directory using `cd neural-network/`
 * Compile the project using  `make`
-* Create the dataset directory using  `mkdir data`
-* Extract the CSV files found on [Kaggle](https://www.kaggle.com/zalando-research/fashionmnist/data) in  `data` directory created before
+* Extract the CSV files found on [Kaggle](https://www.kaggle.com/zalando-research/fashionmnist/data) in  `build` directory created before
 * Execute the project:
-    * To execute the project using the default settings, use `make run`
-    * To execute the project using custom model architecture:
+    * To execute the project:
         * Change directory using `cd build`
         * Use `./Neural-Network -i <int> -h <int> [-h <int> ...] -o <int>`
         
             For example `./Neural-Network -i 784 -h 150 -h 100 -h 50 -o 10`
-
-To rebuild the project, use  `make clean`  first and then execute  `make`  and  `make run`.
 
 To compile using the Intel Compiler in a Windows environment, use: `icl Accuracy.cpp Activation.cpp Dataset.cpp Driver.cpp Export.cpp Fit.cpp Forward.cpp Interface.cpp Loss.cpp Optimize.cpp Parser.cpp Utilities.cpp /Qopenmp /Qunroll /Qipo /O3 /Ot /GT /Ob2 /Oi /GA /fp:precise /QxHost /Qstd:c++17 /FeNeural-Network.exe`
 
