@@ -40,7 +40,7 @@ void nn::forward(void)
 #pragma omp parallel for simd num_threads(N_THREADS) schedule(runtime)
         for (int neuron = 0; neuron < layers[layer] - 1; neuron += 1)
         {
-            a[layer][neuron] = sigmoid(z[layer][neuron]);                                                       /// Applies model's ativation function to computed results
+            a[layer][neuron] = sigmoid(z[layer][neuron]);                                                       /// Applies model's activation function to computed results
         }
 
         free(REGISTER);                                                                                         /// Deallocates the temporary container off the memory
@@ -69,7 +69,7 @@ void nn::forward(void)
 #pragma omp parallel for simd num_threads(N_THREADS) schedule(runtime)
     for (int neuron = 0; neuron < layers[layers.size() - 1]; neuron += 1)
     {
-        a[layers.size() - 1][neuron] = sigmoid(z[layers.size() - 1][neuron]);                                   /// Applies model's ativation function to computed results
+        a[layers.size() - 1][neuron] = sigmoid(z[layers.size() - 1][neuron]);                                   /// Applies model's activation function to computed results
     }
 
     free(REGISTER);                                                                                             /// Deallocates the temporary container off the memory

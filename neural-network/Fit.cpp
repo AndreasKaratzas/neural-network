@@ -12,7 +12,7 @@
  */
 void nn::fit(dataset(&TRAIN))
 {
-    int shuffled_idx;                                                                       /// Decalres dample "pointer"
+    int shuffled_idx;                                                                       /// Decalres sample "pointer"
     double start, end;                                                                      /// Declares epoch benchmark checkpoints
     std::array<double, EPOCHS> loss;                                                        /// Declares container for training loss
     std::array<int, EPOCHS> validity;                                                       /// Declares container for training accuracy
@@ -20,7 +20,7 @@ void nn::fit(dataset(&TRAIN))
     std::random_device rd;                                                                  /// Initializes non-deterministic random generator
     std::mt19937 gen(rd());                                                                 /// Seeds mersenne twister
     std::uniform_int_distribution<> dist(0, TRAIN.samples - 1);                             /// Distribute results between 0 and sample count exclusive
-                                                                                            /// Change this depending on the ammount of loaded datasets
+                                                                                            /// Change this depending on the amount of loaded datasets
     for (int epoch = 0; epoch < EPOCHS; epoch += 1)                                         /// Trains model
     {
         loss[epoch] = 0.0;                                                                  /// Initializes epoch's training loss
@@ -29,7 +29,7 @@ void nn::fit(dataset(&TRAIN))
         start = omp_get_wtime();                                                            /// Benchmarks epoch
         for (int sample = 0; sample < TRAIN.samples; sample += 1)                           /// Iterates through all examples of the training dataset
         {
-            shuffled_idx = dist(gen);                                                       /// Selects a random example to avoid unshuffled dataset event
+            shuffled_idx = dist(gen);                                                       /// Selects a random example to avoid un-shuffled dataset event
             zero_grad(TRAIN.X[shuffled_idx]);                                               /// Resets the neurons of the neural network
             forward();                                                                      /// Feeds forward the selected input
             back_propagation(TRAIN.Y[shuffled_idx]);                                        /// Computes the error for every neuron in the network

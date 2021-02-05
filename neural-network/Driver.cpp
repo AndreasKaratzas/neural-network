@@ -11,7 +11,7 @@
  *
  * @note    For the driver to work properly, adjust the project settings found at the `Common.h` file.
  *          One such adjustment is to define the filepaths of the training and the evaluation subsets.
- *          Another stronlgy recommended change is the number of threads requested by the OS. This number
+ *          Another strongly recommended change is the number of threads requested by the OS. This number
  *          is recommended to be equal to the number of the hosts's Logical Processors. This will very
  *          possibly optimize execution time and therefore increase performance.
  */

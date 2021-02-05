@@ -87,7 +87,7 @@ void nn::set_z(const std::vector<int>& l)
  * @note    The `a` container for each neuron `i` in layer `l` holds the sum given by the
  *          formula:
  *          f{(z_i)}, \forall i \in `l`, where f is the chosen activation function for every
- *          neuron i nthe model.
+ *          neuron i the model.
  */
 void nn::set_a(const std::vector<int>& l)
 {
@@ -128,10 +128,10 @@ void nn::set_weights(const std::vector<int>& l, const double min, const double m
     weights = new double** [l.size() - 1];                              /// Allocates memory for the weights container
     for (int i = 1; i < l.size() - 1; i += 1)
     {
-        weights[i - 1] = new double* [l[i] - 1];                        /// Allocates memory for the weigts of a layer in a neural network
+        weights[i - 1] = new double* [l[i] - 1];                        /// Allocates memory for the weights of a layer in a neural network
         for (int j = 0; j < l[i] - 1; j += 1)
         {
-            weights[i - 1][j] = new double[l[i - 1]];                   /// Allocates memory for the weigths of each neuron in a layer
+            weights[i - 1][j] = new double[l[i - 1]];                   /// Allocates memory for the weights of each neuron in a layer
             for (int k = 0; k < l[i - 1]; k += 1)
             {
                 weights[i - 1][j][k] = dist(gen);                       /// Uses random generator to initialize synapse
@@ -141,7 +141,7 @@ void nn::set_weights(const std::vector<int>& l, const double min, const double m
     weights[l.size() - 2] = new double* [l[l.size() - 1]];              /// Initializes weights in the output layer
     for (int j = 0; j < l[l.size() - 1]; j += 1)                        /// There is no bias in the output layer
     {
-        weights[l.size() - 2][j] = new double[l[l.size() - 2]];         /// Allocates memory for the weigths of each neuron in the output layer
+        weights[l.size() - 2][j] = new double[l[l.size() - 2]];         /// Allocates memory for the weights of each neuron in the output layer
         for (int k = 0; k < l[l.size() - 2]; k += 1)
         {
             weights[l.size() - 2][j][k] = dist(gen);                    /// Uses random generator to initialize synapse

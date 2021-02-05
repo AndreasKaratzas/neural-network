@@ -25,9 +25,9 @@ void nn::back_propagation(double* (&Y))
         delta[layers.size() - 2][neuron] = (a[layers.size() - 1][neuron] - Y[neuron]) * sig_derivative(a[layers.size() - 1][neuron]);               /// Computes the error of the neurons in the last layer
     }
     
-    dynamic_size = layers[layers.size() - 2];                                                                                                       /// Declares ammount of memory to store `delta` corresponding to the neurons of the last *hidden* layer
+    dynamic_size = layers[layers.size() - 2];                                                                                                       /// Declares amount of memory to store `delta` corresponding to the neurons of the last *hidden* layer
 
-    REGISTER = (double*)calloc(dynamic_size, sizeof(double));                                                                                       /// Allocates the ammount of memory computed above
+    REGISTER = (double*)calloc(dynamic_size, sizeof(double));                                                                                       /// Allocates the amount of memory computed above
 
     if (REGISTER == NULL)
     {
@@ -57,7 +57,7 @@ void nn::back_propagation(double* (&Y))
     {
         dynamic_size = layers[layers.size() - layer - 1];
 
-        REGISTER = (double*)calloc(dynamic_size, sizeof(double));                                                                                   /// Allocates the ammount of memory computed above
+        REGISTER = (double*)calloc(dynamic_size, sizeof(double));                                                                                   /// Allocates the amount of memory computed above
 
         if (REGISTER == NULL)
         {

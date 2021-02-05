@@ -155,7 +155,7 @@ void dataset::read_csv(const char* filename, int dataset_flag, double x_max)
 
             if (sscanf(token, "%d", &intval) != 1)                                                              /// Masks invalid data error
             {
-                fprintf(stderr, "error - not an integer");                                                      /// Expecrting integer value type data
+                fprintf(stderr, "error - not an integer");                                                      /// Expecting integer value type data
             }
 
             for (y_idx = 0; y_idx < classes; y_idx += 1)                                                        /// Convert integer to `Y` value for the model depending on the number of classes

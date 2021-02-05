@@ -303,7 +303,7 @@ void progress_bar::indicate_progress(double checkpoint)
 
 /**
  * Prints epoch stats. More specifically, it prints the epoch's number
- * along with the model's acuracy and loss. It also prints the epoch's benchmark.
+ * along with the model's accuracy and loss. It also prints the epoch's benchmark.
  *
  * @param[in] epoch the epoch's number
  * @param[in] epoch_loss the model's loss during a certain epoch of training or evaluation
