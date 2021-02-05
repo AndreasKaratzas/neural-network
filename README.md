@@ -40,7 +40,7 @@ In `Common.hpp` there are parameters that can be tuned for better results. For e
 
 The effective core utilization percentage was around 97 %. An example of execution is: 
 
-![Expected Output](expected-output.png)
+![Expected Output](expected-output.PNG)
 
 Below, there are multiple model architecures compared for research purposes using the fashion MNIST dataset:
 
