@@ -6,10 +6,6 @@ In this repository, there is a simple implementation of a feed forward multi-lay
 
 This implementation runs on the system's __CPU__ in parallel. The model was tested using the [Fashion MNIST](https://www.kaggle.com/zalando-research/fashionmnist/data) dataset.
 
-## Disclaimer
-
-The executable generated is much slower when compiled with either G++ or Microsoft Visual C++ compilers. The recommended compiler is Intel Compiler version 19.1.
-
 ## Installation
 
 * Open a terminal
