@@ -121,7 +121,7 @@ void dataset::read_csv(const char* filename, int dataset_flag, double x_max)
     {
         std::cout << "\n";
 
-        progress_bar progress{ dataset_flag == 0 ? training_message : evalation_message, char(219), CLI_WINDOW_WIDTH };
+        progress_bar progress{ dataset_flag == 0 ? training_message : evalation_message, '*', CLI_WINDOW_WIDTH };
 
         rewind(stream);
 

@@ -17,7 +17,7 @@
 double nn::mse_loss(double* (&Y), int dim)
 {
     double l = 0.0;                                                         /// Initializes loss variable (accumulator)
-#pragma omp parallel for num_threads(N_THREADS) reduction(+ : l) schedule(runtime)
+#pragma omp simd reduction(+ : l)
     for (int i = 0; i < dim; i += 1)
     {
         l += (1.0 / 2.0) * (Y[i] - a[layers.size() - 1][i]) * (Y[i] - a[layers.size() - 1][i]);
