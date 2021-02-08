@@ -2,7 +2,7 @@
  * Activation.hpp
  * 
  * In this header file, we define
- * all neuron activtion functions.
+ * all neuron activation functions.
  * Specifically, there is an 
  * implementation of the sigmoid
  * and the ReLU activation function.

@@ -9,7 +9,7 @@
 void nn::export_weights(std::string filename)
 {
     std::ofstream export_stream;                                    /// Defines an output file stream
-    export_stream.open("./data/" + filename + ".csv");              /// Associates `export_stream` with a CSV file named after the `filename` variable
+    export_stream.open("../data/" + filename + ".csv");             /// Associates `export_stream` with a CSV file named after the `filename` variable
     for (int i = 1; i < layers.size() - 1; i += 1)                  /// Loops through model's hidden layers
     {
         for (int j = 0; j < layers[i] - 1; j += 1)                  /// Loops through layer's synapses
