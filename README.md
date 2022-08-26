@@ -12,7 +12,7 @@ On Windows OS, the installation used `Intel OneAPI`, which is available for all 
 ## Installation
 
 * Open a terminal
-* Clone the repository `git clone https://github.com/AndreasKaratzas/ece572.git`
+* Clone the repository `https://github.com/AndreasKaratzas/neural-network.git`
 * Compile the project using `make`
 * Create the dataset directory using `mkdir data`
 * Extract the CSV files found on [Kaggle](https://www.kaggle.com/zalando-research/fashionmnist/data) in  `data` directory created before
